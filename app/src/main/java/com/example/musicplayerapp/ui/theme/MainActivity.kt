@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val REQUEST_CODE = 1
         var musicFiles: ArrayList<MusicFiles> = ArrayList()
+        var albums :ArrayList<MusicFiles> =ArrayList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,6 +93,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getAllAudio(context: Context): ArrayList<MusicFiles> {
+
+        val duplicate = ArrayList<String>()
         val tempAudioList = ArrayList<MusicFiles>()
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
@@ -113,6 +116,10 @@ class MainActivity : AppCompatActivity() {
 
                 val musicFile = MusicFiles(path, title, artist, album, duration)
                 tempAudioList.add(musicFile)
+                if (!duplicate.contains(album)) {
+                    albums.add(musicFile)
+                    duplicate.add(album)
+                }
             }
         }
         return tempAudioList

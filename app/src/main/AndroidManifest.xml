@@ -15,6 +15,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".ui.theme.AlbumDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.theme.PlayerActivity"
             android:exported="false" />
         <activity

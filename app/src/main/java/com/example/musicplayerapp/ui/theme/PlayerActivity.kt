@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.albums
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.io.IOException
@@ -258,7 +259,14 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun getIntentMethod() {
         position = intent.getIntExtra("position", -1)
-        listSongs = musicFiles
+        val sender = intent.getStringExtra("sender")
+
+        if (sender != null && sender == "albumDetails"){
+            listSongs=albums
+        }
+        else {
+            listSongs = musicFiles
+        }
 
         if (listSongs != null && position != -1) {
 
