@@ -75,23 +75,6 @@ class MainActivity : AppCompatActivity() {
         tabLayout.setupWithViewPager(viewPager)
     }
 
-    class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-
-        private val fragments = ArrayList<Fragment>()
-        private val titles = ArrayList<String>()
-
-        fun addFragments(fragment: Fragment, title: String) {
-            fragments.add(fragment)
-            titles.add(title)
-        }
-
-        override fun getItem(position: Int): Fragment = fragments[position]
-
-        override fun getCount(): Int = fragments.size
-
-        override fun getPageTitle(position: Int): CharSequence = titles[position]
-    }
-
     private fun getAllAudio(context: Context): ArrayList<MusicFiles> {
 
         val duplicate = ArrayList<String>()

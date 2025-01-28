@@ -32,6 +32,7 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             Glide.with(mContext).load(R.drawable.error_image).into(holder.albumImage)
         }
         holder.itemView.setOnClickListener {
+            PlayerActivity.listSongs=albumFiles
             val intent = Intent(mContext, PlayerActivity::class.java)
             intent.putExtra("sender", "albumDetails")
             intent.putExtra("position", position)

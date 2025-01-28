@@ -44,9 +44,6 @@ class PlayerActivity : AppCompatActivity() {
         var mediaPlayer: MediaPlayer? = null
     }
     private val handler = Handler()
-    private var playThread: Thread? = null
-    private var prevThread: Thread? = null
-    private var nextThread: Thread? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,197 +76,77 @@ class PlayerActivity : AppCompatActivity() {
                 handler.postDelayed(this, 1000)
             }
         })
-
     }
 
     override fun onResume() {
-        playThreadBtn()
-        nextThreadBtn()
-        prevThreadBtn()
         super.onResume()
+        setButtonListeners()
     }
 
-    private fun prevThreadBtn() {
-        prevThread = Thread {
-            prevBtn.setOnClickListener {
-                prevBtnClicked()
-            }
-        }
-        prevThread?.start()
+    private fun setButtonListeners() {
+        nextBtn.setOnClickListener { nextBtnClicked() }
+        prevBtn.setOnClickListener { prevBtnClicked() }
+        playPauseBtn.setOnClickListener { playPauseBtnClicked() }
     }
 
     private fun prevBtnClicked() {
-        if (mediaPlayer!!.isPlaying) {
+        if (mediaPlayer != null) {
             mediaPlayer!!.stop()
             mediaPlayer!!.release()
-            position = if ((position - 1) < 0) (listSongs.size - 1) else (position - 1)
-            uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            metaData(uri)
-            song_name.text = listSongs[position].title
-            artist_name.text = listSongs[position].artist
-            seekBar.max = mediaPlayer!!.duration / 1000
-            runOnUiThread(object : Runnable {
-                override fun run() {
-                    if (mediaPlayer != null) {
-                        val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
-                        seekBar.progress = mCurrentPosition
-                        duration_played.text = formattedTime(mCurrentPosition)
-                    }
-                    handler.postDelayed(this, 1000)
-                }
-            })
-            playPauseBtn.setImageResource(R.drawable.ic_pause)
-            mediaPlayer!!.start()
-        } else {
-            mediaPlayer!!.stop()
-            mediaPlayer!!.release()
-            position = if ((position - 1) < 0) (listSongs.size - 1) else (position - 1)
-            uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            metaData(uri)
-            song_name.text = listSongs[position].title
-            artist_name.text = listSongs[position].artist
-            seekBar.max = mediaPlayer!!.duration / 1000
-            runOnUiThread(object : Runnable {
-                override fun run() {
-                    if (mediaPlayer != null) {
-                        val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
-                        seekBar.progress = mCurrentPosition
-                        duration_played.text = formattedTime(mCurrentPosition)
-                    }
-                    handler.postDelayed(this, 1000)
-                }
-            })
-
-            playPauseBtn.setImageResource(R.drawable.ic_play)
         }
-    }
-
-    private fun nextThreadBtn() {
-        nextThread = Thread {
-            nextBtn.setOnClickListener {
-                nextBtnClicked()
-            }
-        }
-        nextThread?.start()
+        position = if ((position - 1) < 0) (listSongs.size - 1) else (position - 1)
+        uri = Uri.parse(listSongs[position].path)
+        mediaPlayer = MediaPlayer.create(applicationContext, uri)
+        metaData(uri)
+        song_name.text = listSongs[position].title
+        artist_name.text = listSongs[position].artist
+        seekBar.max = mediaPlayer!!.duration / 1000
+        playPauseBtn.setImageResource(R.drawable.ic_pause)
+        mediaPlayer!!.start()
     }
 
     private fun nextBtnClicked() {
-        if (mediaPlayer!!.isPlaying) {
+        if (mediaPlayer != null) {
             mediaPlayer!!.stop()
             mediaPlayer!!.release()
-            position = (position + 1) % listSongs.size
-            uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            metaData(uri)
-            song_name.text = listSongs[position].title
-            artist_name.text = listSongs[position].artist
-            seekBar.max = mediaPlayer!!.duration / 1000
-            runOnUiThread(object : Runnable {
-                override fun run() {
-                    if (mediaPlayer != null) {
-                        val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
-                        seekBar.progress = mCurrentPosition
-                        duration_played.text = formattedTime(mCurrentPosition)
-                    }
-                    handler.postDelayed(this, 1000)
-                }
-            })
-
-            playPauseBtn.setImageResource(R.drawable.ic_pause)
-            mediaPlayer!!.start()
-        } else {
-            mediaPlayer!!.stop()
-            mediaPlayer!!.release()
-            position = (position + 1) % listSongs.size
-            uri = Uri.parse(listSongs[position].path)
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
-            metaData(uri)
-            song_name.text = listSongs[position].title
-            artist_name.text = listSongs[position].artist
-            seekBar.max = mediaPlayer!!.duration / 1000
-            runOnUiThread(object : Runnable {
-                override fun run() {
-                    if (mediaPlayer != null) {
-                        val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
-                        seekBar.progress = mCurrentPosition
-                        duration_played.text = formattedTime(mCurrentPosition)
-                    }
-                    handler.postDelayed(this, 1000)
-                }
-            })
-
-            playPauseBtn.setImageResource(R.drawable.ic_play)
         }
-    }
-
-    private fun playThreadBtn() {
-        playThread = Thread {
-            playPauseBtn.setOnClickListener {
-                playPauseBtnClicked()
-            }
-        }
-        playThread?.start()
+        position = (position + 1) % listSongs.size
+        uri = Uri.parse(listSongs[position].path)
+        mediaPlayer = MediaPlayer.create(applicationContext, uri)
+        metaData(uri)
+        song_name.text = listSongs[position].title
+        artist_name.text = listSongs[position].artist
+        seekBar.max = mediaPlayer!!.duration / 1000
+        playPauseBtn.setImageResource(R.drawable.ic_pause)
+        mediaPlayer!!.start()
     }
 
     private fun playPauseBtnClicked() {
-        if (mediaPlayer!!.isPlaying) {
-            playPauseBtn.setImageResource(R.drawable.ic_play)
-            mediaPlayer!!.pause()
+        if (mediaPlayer != null) {
+            if (mediaPlayer!!.isPlaying) {
+                playPauseBtn.setImageResource(R.drawable.ic_play)
+                mediaPlayer!!.pause()
+            } else {
+                playPauseBtn.setImageResource(R.drawable.ic_pause)
+                mediaPlayer!!.start()
+            }
             seekBar.max = mediaPlayer!!.duration / 1000
-            runOnUiThread(object : Runnable {
-                override fun run() {
-                    if (mediaPlayer != null) {
-                        val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
-                        seekBar.progress = mCurrentPosition
-                        duration_played.text = formattedTime(mCurrentPosition)
-                    }
-                    handler.postDelayed(this, 1000)
-                }
-            })
-
-        } else {
-            playPauseBtn.setImageResource(R.drawable.ic_pause)
-            mediaPlayer!!.start()
-            seekBar.max = mediaPlayer!!.duration / 1000
-            runOnUiThread(object : Runnable {
-                override fun run() {
-                    if (mediaPlayer != null) {
-                        val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
-                        seekBar.progress = mCurrentPosition
-                        duration_played.text = formattedTime(mCurrentPosition)
-                    }
-                    handler.postDelayed(this, 1000)
-                }
-            })
-
         }
     }
 
     private fun formattedTime(mCurrentPosition: Int): String {
-        var totalout = ""
-        var totalNew = ""
         val seconds = (mCurrentPosition % 60).toString()
         val minutes = (mCurrentPosition / 60).toString()
-        totalout = "$minutes:$seconds"
-        totalNew = "$minutes:0$seconds"
-        return if (seconds.length == 1) totalNew else totalout
+        return if (seconds.length == 1) "$minutes:0$seconds" else "$minutes:$seconds"
     }
 
     private fun getIntentMethod() {
         position = intent.getIntExtra("position", -1)
         val sender = intent.getStringExtra("sender")
 
-        if (sender != null && sender == "albumDetails"){
-            listSongs=albums
-        }
-        else {
-            listSongs = musicFiles
-        }
+        listSongs = musicFiles
 
-        if (listSongs != null && position != -1) {
-
+        if (position != -1) {
             playPauseBtn.setImageResource(R.drawable.ic_pause)
             val fullPath = listSongs[position].path
             Log.d("PlayerActivity", "Full Path: $fullPath")
@@ -338,4 +215,3 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 }
-
