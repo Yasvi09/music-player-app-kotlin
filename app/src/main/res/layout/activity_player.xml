@@ -40,7 +40,6 @@
             android:id="@+id/menu_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_menu"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"/>
     </RelativeLayout>

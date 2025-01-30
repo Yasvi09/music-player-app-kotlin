@@ -1,5 +1,6 @@
 package com.example.musicplayerapp.ui.theme
 
+import MusicFiles
 import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
@@ -32,20 +33,25 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             Glide.with(mContext).load(R.drawable.error_image).into(holder.albumImage)
         }
         holder.itemView.setOnClickListener {
-            PlayerActivity.listSongs=albumFiles
-            val intent = Intent(mContext, PlayerActivity::class.java)
-            intent.putExtra("sender", "albumDetails")
-            intent.putExtra("position", position)
+            val intent = Intent(mContext, PlayerActivity::class.java).apply {
+                putExtra("sender", "albumDetails")
+                putExtra("position", position)
+                putParcelableArrayListExtra("albumFiles", albumFiles) // Pass albumFiles here
+            }
             mContext.startActivity(intent)
         }
     }
+
 
     inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val albumImage: ImageView = itemView.findViewById(R.id.music_img)
         val albumName: TextView = itemView.findViewById(R.id.music_file_name)
     }
 
-    private fun getAlbumArt(uri: String): ByteArray? {
+    private fun getAlbumArt(uri: String?): ByteArray? {
+        if (uri.isNullOrEmpty()) {
+            return null
+        }
         val retriever = MediaMetadataRetriever()
         return try {
             retriever.setDataSource(uri)
@@ -56,5 +62,6 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             retriever.release()
         }
     }
+
 
 }
