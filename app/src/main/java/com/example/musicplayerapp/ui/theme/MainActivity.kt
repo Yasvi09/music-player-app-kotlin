@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -23,6 +24,14 @@ class MainActivity : AppCompatActivity() {
         const val REQUEST_CODE = 1
         var musicFiles: ArrayList<MusicFiles> = ArrayList()
         var albums :ArrayList<MusicFiles> =ArrayList()
+        const val MUSIC_LAST_PLAYED = "LAST_PLAYED"
+        const val MUSIC_FILE = "STORED_MUSIC"
+        var SHOW_MINI_PLAYER = false
+        var PATH_TO_FRAG: String? = null
+        var ARTIST_TO_FRAG: String? = null
+        var SONG_NAME_TO_FRAG: String? = null
+        const val ARTIST_NAME = "ARTIST NAME"
+        const val SONG_NAME = "SONG NAME"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,4 +133,25 @@ class MainActivity : AppCompatActivity() {
         }
         return tempAudioList
     }
+
+    override fun onResume() {
+        super.onResume()
+        val preferences = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE)
+        val path = preferences.getString(MUSIC_FILE, null)
+        val artist = preferences.getString(ARTIST_NAME, null)
+        val songName = preferences.getString(SONG_NAME, null)
+
+        if (path != null) {
+            SHOW_MINI_PLAYER = true
+            PATH_TO_FRAG = path
+            ARTIST_TO_FRAG = artist
+            SONG_NAME_TO_FRAG = songName
+        } else {
+            SHOW_MINI_PLAYER = false
+            PATH_TO_FRAG = null
+            ARTIST_TO_FRAG = null
+            SONG_NAME_TO_FRAG = null
+        }
+    }
+
 }

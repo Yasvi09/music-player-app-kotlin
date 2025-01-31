@@ -28,6 +28,10 @@ import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_NEX
 import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_PLAY
 import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_PREVIOUS
 import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.CHANNEL_ID_2
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.ARTIST_NAME
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.MUSIC_FILE
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.MUSIC_LAST_PLAYED
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.SONG_NAME
 import com.example.musicplayerapp.ui.theme.MainActivity.Companion.musicFiles
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
@@ -291,6 +295,7 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
 
     private fun getIntentMethod() {
         position = intent.getIntExtra("position", -1)
+        val currentPosition = intent.getIntExtra("current_position", 0)
         val sender = intent.getStringExtra("sender")
         listSongs = if (sender != null && sender == "albumDetails") {
             intent.getParcelableArrayListExtra<MusicFiles>("albumFiles") ?: arrayListOf()
@@ -299,23 +304,26 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         }
 
         if (listSongs != null && position != -1) {
+
+            MainActivity.SHOW_MINI_PLAYER = true
+            MainActivity.PATH_TO_FRAG = listSongs[position].path
+            MainActivity.ARTIST_TO_FRAG = listSongs[position].artist
+            MainActivity.SONG_NAME_TO_FRAG = listSongs[position].title
+
             playPauseBtn.setImageResource(R.drawable.ic_pause)
-            val fullPath = listSongs[position].path
-            Log.d("PlayerActivity", "Full Path: $fullPath")
-            val file = File(fullPath)
+            uri = Uri.parse(listSongs[position].path)
 
-            if (!file.exists()) {
-                Toast.makeText(this, "File does not exist: $fullPath", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-            uri = Uri.fromFile(file)
-
-            showNotification(R.drawable.ic_pause)
-            val intent = Intent(this, MusicService::class.java).apply {
-                putExtra("servicePosition", position)
-            }
+            val intent = Intent(this, MusicService::class.java)
+            intent.putExtra("servicePosition", position)
+            intent.putExtra("seekTo", currentPosition) // Pass the position to seek to
             startService(intent)
+
+            val editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit()
+            editor.putString(MUSIC_FILE, uri.toString())
+            editor.putString(ARTIST_NAME, listSongs[position].artist)
+            editor.putString(SONG_NAME, listSongs[position].title)
+            editor.apply()
+
         }
     }
 
@@ -332,6 +340,11 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         repeatBtn = findViewById(R.id.id_repeat)
         playPauseBtn = findViewById(R.id.play_pause)
         seekBar = findViewById(R.id.seekBar)
+
+        backBtn.setOnClickListener {
+            super.onBackPressed()
+        }
+
     }
 
     private fun metaData(uri: Uri) {
@@ -362,7 +375,7 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         val myBinder = service as MusicService.MyBinder
         musicService = myBinder.getService()
         musicService!!.setCallBack(this)
-        Toast.makeText(this, "Connected $musicService", Toast.LENGTH_SHORT).show()
+       //  Toast.makeText(this, "Connected $musicService", Toast.LENGTH_SHORT).show()
 
         musicService?.let {
             seekBar.max = it.getDuration() / 1000
@@ -428,7 +441,5 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         retriever.setDataSource(uri)
         return retriever.embeddedPicture
     }
-
-
 
 }

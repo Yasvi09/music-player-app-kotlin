@@ -13,11 +13,19 @@ import android.widget.Toast
 class MusicService : Service(), MediaPlayer.OnCompletionListener {
 
     private val mBinder: IBinder = MyBinder()
-    private var mediaPlayer: MediaPlayer? = null
-    private var musicFiles: ArrayList<MusicFiles> = ArrayList()
+    var mediaPlayer: MediaPlayer? = null
+    var musicFiles: ArrayList<MusicFiles> = ArrayList()
     private var uri: Uri? = null
-    private var position: Int = -1
+    var position: Int = -1
     private var actionPlaying: ActionPlaying? = null
+    companion object {
+        const val MUSIC_LAST_PLAYED = "LAST_PLAYED"
+        const val MUSIC_FILE = "STORED_MUSIC"
+        const val ARTIST_NAME = "ARTIST NAME"
+        const val SONG_NAME = "SONG NAME"
+    }
+
+
 
     override fun onCreate() {
         super.onCreate()
@@ -36,41 +44,31 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val myPosition = intent?.getIntExtra("servicePosition", -1) ?: -1
+        val seekTo = intent?.getIntExtra("seekTo", 0) ?: 0
         val actionName = intent?.getStringExtra("ActionName")
 
         if (myPosition != -1) {
             playMedia(myPosition)
+            // Seek to the saved position after creating the media player
+            mediaPlayer?.let {
+                if (seekTo > 0) {
+                    it.seekTo(seekTo)
+                }
+            }
         }
 
-        actionName?.let {
-            when (it) {
-                "playPause" -> {
-                    Toast.makeText(this, "PlayPause", Toast.LENGTH_SHORT).show()
-                    actionPlaying?.let { action ->
-                        Log.e("Inside", "Action")
-                        action.playPauseBtnClicked()
-                    }
-                }
-                "next" -> {
-                    Toast.makeText(this, "Next", Toast.LENGTH_SHORT).show()
-                    actionPlaying?.let { action ->
-                        Log.e("Inside", "Action")
-                        action.nextBtnClicked()
-                    }
-                }
-                "previous" -> {
-                    Toast.makeText(this, "Previous", Toast.LENGTH_SHORT).show()
-                    actionPlaying?.let { action ->
-                        Log.e("Inside", "Action")
-                        action.prevBtnClicked()
-                    }
-                }
-
+        actionName?.run {
+            when (this) {
+                "playPause" -> playPauseBtnClicked()
+                "next" -> nextBtnCicked()
+                "previous" -> previousBtnClicked()
                 else -> {}
             }
         }
+
         return START_STICKY
     }
+
 
     private fun playMedia(startPosition: Int) {
         musicFiles = PlayerActivity.listSongs!!
@@ -120,6 +118,13 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
     fun createMediaPlayer(positionInner: Int) {
         position = positionInner
         uri = Uri.parse(musicFiles[position].path)
+
+        val editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit()
+        editor.putString(MUSIC_FILE, uri.toString())
+        editor.putString(ARTIST_NAME, musicFiles[position].artist)
+        editor.putString(SONG_NAME, musicFiles[position].title)
+        editor.apply()
+
         mediaPlayer = MediaPlayer.create(baseContext, uri)
     }
 
@@ -144,4 +149,18 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
     fun setCallBack(actionPlaying: ActionPlaying) {
         this.actionPlaying = actionPlaying
     }
+
+    fun playPauseBtnClicked() {
+        actionPlaying?.playPauseBtnClicked()
+    }
+
+    fun previousBtnClicked() {
+        actionPlaying?.prevBtnClicked()
+    }
+
+    fun nextBtnCicked() {
+        actionPlaying?.nextBtnClicked()
+    }
+
+
 }
