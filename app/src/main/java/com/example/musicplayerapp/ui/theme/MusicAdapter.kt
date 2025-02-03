@@ -47,7 +47,7 @@ class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when(item.itemId){
-                    R.id.add_playlist ->{
+                    R.id.playlist ->{
                         Toast.makeText(mContext, "Add to Playlist", Toast.LENGTH_SHORT).show()
                         true
                     }

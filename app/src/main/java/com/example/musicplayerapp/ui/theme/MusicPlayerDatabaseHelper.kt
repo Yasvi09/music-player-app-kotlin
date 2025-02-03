@@ -1,18 +1,18 @@
-package com.example.musicplayerapp.database
+package com.example.musicplayerapp.ui.theme
 
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.SQLException
 
-class MusicPlayerDatabaseHelper {
+public class MusicPlayerDatabaseHelper {
     companion object {
         private const val DATABASE_URL = "jdbc:mysql://sql12.freesqldatabase.com:3306/sql12760814"
         private const val DATABASE_USER = "sql12760814"
         private const val DATABASE_PASSWORD = "sKRnKxEizD"
 
         // Table creation queries
-        private const val CREATE_PLAYLIST_TABLE = """
+         const val CREATE_PLAYLIST_TABLE = """
             CREATE TABLE IF NOT EXISTS PlaylistDatabase (
                 _id BIGINT PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(255) NOT NULL,
@@ -20,7 +20,7 @@ class MusicPlayerDatabaseHelper {
             )
         """
 
-        private const val CREATE_PLAYLIST_SONGS_TABLE = """
+         const val CREATE_PLAYLIST_SONGS_TABLE = """
             CREATE TABLE IF NOT EXISTS PlaylistSongs (
                 _id BIGINT PRIMARY KEY AUTO_INCREMENT,
                 playlist_id BIGINT,
@@ -32,7 +32,7 @@ class MusicPlayerDatabaseHelper {
         """
     }
 
-    private var connection: Connection? = null
+     var connection: Connection? = null
 
     init {
         try {
@@ -44,7 +44,7 @@ class MusicPlayerDatabaseHelper {
         }
     }
 
-    private fun getConnection(): Connection {
+     fun getConnection(): Connection {
         if (connection == null || connection?.isClosed == true) {
             try {
                 println("Attempting to connect to database at: $DATABASE_URL")
@@ -62,7 +62,7 @@ class MusicPlayerDatabaseHelper {
         return connection!!
     }
 
-    private fun createTables() {
+     fun createTables() {
         try {
             getConnection().use { conn ->
                 conn.createStatement().use { statement ->
@@ -244,7 +244,12 @@ class MusicPlayerDatabaseHelper {
     }
 }
 
-// Data Models
+fun main(){
+    val db = MusicPlayerDatabaseHelper()
+
+    println(db.getAllPlaylists())
+}
+
 data class PlaylistData(
     val _id: Long,
     val name: String,

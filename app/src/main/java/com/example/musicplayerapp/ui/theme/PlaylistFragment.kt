@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
-import com.example.musicplayerapp.database.MusicPlayerDatabaseHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -18,7 +17,7 @@ class PlaylistFragment : Fragment() {
 
     private lateinit var playlistRecyclerView: RecyclerView
     private lateinit var addPlaylistBtn: FloatingActionButton
-    private val dbHelper = MusicPlayerDatabaseHelper() // Pass the context for SQLite
+    private lateinit var  dbHelper : MusicPlayerDatabaseHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

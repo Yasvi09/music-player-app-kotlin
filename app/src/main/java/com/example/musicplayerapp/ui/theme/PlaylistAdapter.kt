@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
-import com.example.musicplayerapp.database.PlaylistData
+
 
 
 class PlaylistAdapter(private val playlists: List<PlaylistData>) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {

@@ -3,5 +3,5 @@
 
     <item
         android:title="Add to Playlist"
-        android:id="@+id/add_playlist"/>
+        android:id="@+id/playlist"/>
 </menu>
