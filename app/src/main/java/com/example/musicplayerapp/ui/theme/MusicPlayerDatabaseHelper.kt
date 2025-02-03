@@ -7,9 +7,9 @@ import java.sql.SQLException
 
 class MusicPlayerDatabaseHelper {
     companion object {
-        private const val DATABASE_URL = "jdbc:mysql://localhost:3306/music_player_db"
-        private const val DATABASE_USER = "your_username"
-        private const val DATABASE_PASSWORD = "your_password"
+        private const val DATABASE_URL = "jdbc:mysql://sql12.freesqldatabase.com:3306/sql12760814"
+        private const val DATABASE_USER = "sql12760814"
+        private const val DATABASE_PASSWORD = "sKRnKxEizD"
 
         // Table creation queries
         private const val CREATE_PLAYLIST_TABLE = """
@@ -46,7 +46,18 @@ class MusicPlayerDatabaseHelper {
 
     private fun getConnection(): Connection {
         if (connection == null || connection?.isClosed == true) {
-            connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)
+            try {
+                println("Attempting to connect to database at: $DATABASE_URL")
+                connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD)
+                println("Successfully connected to database")
+            } catch (e: SQLException) {
+                println("Database connection failed!")
+                println("Error Message: ${e.message}")
+                println("SQL State: ${e.sqlState}")
+                println("Error Code: ${e.errorCode}")
+                e.printStackTrace()
+                throw RuntimeException("Failed to connect to database: ${e.message}")
+            }
         }
         return connection!!
     }

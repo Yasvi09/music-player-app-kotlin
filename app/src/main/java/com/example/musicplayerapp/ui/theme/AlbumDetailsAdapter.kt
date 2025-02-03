@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayerapp.R
@@ -40,12 +42,29 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             }
             mContext.startActivity(intent)
         }
+
+        holder.menuMore.setOnClickListener {
+            val popupMenu = PopupMenu(mContext, it)
+            popupMenu.menuInflater.inflate(R.menu.popup, popupMenu.menu)
+            popupMenu.show()
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.add_playlist ->{
+                        Toast.makeText(mContext, "Add to Playlist", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
     }
 
 
     inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val albumImage: ImageView = itemView.findViewById(R.id.music_img)
         val albumName: TextView = itemView.findViewById(R.id.music_file_name)
+        val menuMore:ImageView=itemView.findViewById(R.id.menuMore)
     }
 
     private fun getAlbumArt(uri: String?): ByteArray? {

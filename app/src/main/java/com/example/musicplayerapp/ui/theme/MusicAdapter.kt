@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import java.io.IOException
@@ -37,6 +39,22 @@ class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<
             intent.putExtra("position", position)
             mContext.startActivity(intent)
         }
+
+        holder.menuMore.setOnClickListener {
+            val popupMenu = PopupMenu(mContext, it)
+            popupMenu.menuInflater.inflate(R.menu.popup, popupMenu.menu)
+            popupMenu.show()
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.add_playlist ->{
+                        Toast.makeText(mContext, "Add to Playlist", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int = mFiles.size
@@ -44,6 +62,7 @@ class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileName: TextView = itemView.findViewById(R.id.music_file_name)
         val albumArt: ImageView = itemView.findViewById(R.id.music_img)
+        val menuMore:ImageView=itemView.findViewById(R.id.menuMore)
     }
 
     private fun getAlbumArt(uri: String): ByteArray? {
