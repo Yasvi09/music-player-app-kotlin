@@ -12,13 +12,15 @@
         android:background="@color/colorPrimary" />
 
     <TextView
+        android:id="@+id/no_playlist_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No playlist found"
         android:textSize="16dp"
         android:textColor="@color/white"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_playlist"

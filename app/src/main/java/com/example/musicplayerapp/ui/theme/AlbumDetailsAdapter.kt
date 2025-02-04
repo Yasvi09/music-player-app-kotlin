@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayerapp.R
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles: ArrayList<MusicFiles>) : RecyclerView.Adapter<AlbumDetailsAdapter.MyHolder>() {
 
@@ -50,8 +51,8 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when(item.itemId){
-                    R.id.add_playlist ->{
-                        Toast.makeText(mContext, "Add to Playlist", Toast.LENGTH_SHORT).show()
+                    R.id.playlist ->{
+                        showBottomSheetDialog()
                         true
                     }
                     else -> false
@@ -59,7 +60,6 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             }
         }
     }
-
 
     inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val albumImage: ImageView = itemView.findViewById(R.id.music_img)
@@ -80,6 +80,17 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
         } finally {
             retriever.release()
         }
+    }
+
+    private fun showBottomSheetDialog() {
+
+        val inflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        val bottomSheetView = inflater.inflate(R.layout.playlist_bottom_sheet, null)
+
+        val bottomSheetDialog = BottomSheetDialog(mContext)
+        bottomSheetDialog.setContentView(bottomSheetView)
+        bottomSheetDialog.show()
     }
 
 

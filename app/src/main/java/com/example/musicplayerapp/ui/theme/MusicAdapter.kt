@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.io.IOException
 
 class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<MusicFiles>) :
@@ -48,7 +49,7 @@ class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<
             popupMenu.setOnMenuItemClickListener { item ->
                 when(item.itemId){
                     R.id.playlist ->{
-                        Toast.makeText(mContext, "Add to Playlist", Toast.LENGTH_SHORT).show()
+                        showBottomSheetDialog()
                         true
                     }
                     else -> false
@@ -80,4 +81,18 @@ class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<
             }
         }
     }
+
+    private fun showBottomSheetDialog() {
+
+        val inflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
+        val bottomSheetView = inflater.inflate(R.layout.playlist_bottom_sheet, null)
+
+        val bottomSheetDialog = BottomSheetDialog(mContext)
+        bottomSheetDialog.setContentView(bottomSheetView)
+        bottomSheetDialog.show()
+    }
+
+
+
 }

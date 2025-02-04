@@ -10,20 +10,20 @@ class PlaylistRepository {
     private val TAG = "PlaylistRepository"
 
 
-        suspend fun createPlaylist(name: String): String? = withContext(Dispatchers.IO) {
-            try {
-                val playlistId = UUID.randomUUID().toString()
-                val timestamp = LocalDateTime.now().toString()
-                val query = "INSERT INTO PlaylistDatabase (_id, name, timestamp) VALUES (?, ?, timestamp)"  // Changed 'id' to '_id'
+    suspend fun createPlaylist(name: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val playlistId = UUID.randomUUID().toString()
+            val timestamp = LocalDateTime.now().toString()
+            val query = "INSERT INTO PlaylistDatabase (_id, name, timestamp) VALUES (?, ?, ?)"  // Changed 'id' to '_id'
 
-                MySQLDatabase.executeQuery(query, listOf(playlistId, name))
-                Log.d(TAG, "Playlist created successfully")
-                playlistId
-            } catch (e: Exception) {
-                Log.e(TAG, "Error creating playlist: ${e.message}")
-                null
-            }
+            MySQLDatabase.executeQuery(query, listOf(playlistId, name, timestamp))
+            Log.d(TAG, "Playlist created successfully")
+            playlistId
+        } catch (e: Exception) {
+            Log.e(TAG, "Error creating playlist: ${e.message}")
+            null
         }
+    }
 
     suspend fun getAllPlaylists(): List<Playlist> = withContext(Dispatchers.IO) {
         try {

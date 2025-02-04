@@ -1,13 +1,12 @@
 package com.example.musicplayerapp.ui.theme.database
 
 import android.util.Log
-import com.github.jasync.sql.db.mysql.MySQLConnectionBuilder
-import com.github.jasync.sql.db.mysql.MySQLConnection
 import com.github.jasync.sql.db.QueryResult
+import com.github.jasync.sql.db.mysql.MySQLConnection
+import com.github.jasync.sql.db.mysql.MySQLConnectionBuilder
 import com.github.jasync.sql.db.pool.ConnectionPool
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
 
 object MySQLDatabase {
     private var connection: ConnectionPool<MySQLConnection>? = null
@@ -30,8 +29,6 @@ object MySQLDatabase {
             false
         }
     }
-
-
 
     suspend fun disconnect() = withContext(Dispatchers.IO) {
         try {

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -30,13 +31,11 @@ class PlaylistFragment : Fragment() {
     private lateinit var playlistRepository: PlaylistRepository
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
 
         lifecycleScope.launch {
             try {
-                // Connect to database
                 MySQLDatabase.connect()
                 loadPlaylists()
             } catch (e: Exception) {
@@ -111,9 +110,17 @@ class PlaylistFragment : Fragment() {
             try {
                 val allPlaylists = playlistRepository.getAllPlaylists()
                 withContext(Dispatchers.Main) {
-                    allPlaylists.forEach {
-                        Log.d("Playlist", "ID: ${it.id}, Name: ${it.name}")
+                    val noPlaylistTextView = view?.findViewById<TextView>(R.id.no_playlist_text)
+                    if (allPlaylists.isEmpty()) {
+                        noPlaylistTextView?.visibility = View.VISIBLE
                     }
+                    else{
+                        noPlaylistTextView?.visibility = View.GONE
+                        allPlaylists.forEach {
+                            Log.d("Playlist", "ID: ${it.id}, Name: ${it.name}")
+                        }
+                    }
+
                     val adapter = PlaylistAdapter(allPlaylists)
                     playlistRecyclerView.adapter = adapter
                 }
