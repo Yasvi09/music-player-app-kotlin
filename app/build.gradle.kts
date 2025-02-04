@@ -45,6 +45,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "META-INF/io.netty.versions.properties"
         }
     }
 }
@@ -69,7 +71,8 @@ dependencies {
     implementation ("androidx.cardview:cardview:1.0.0")
     implementation ("androidx.media:media:1.6.0")
     implementation ("com.google.android.material:material:1.9.0")
-    implementation ("mysql:mysql-connector-java:8.0.27")
+    implementation("com.github.jasync-sql:jasync-mysql:2.2.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

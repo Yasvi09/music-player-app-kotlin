@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.Playlist
 
 
-
-class PlaylistAdapter(private val playlists: List<PlaylistData>) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+class PlaylistAdapter(private val playlists: List<Playlist>) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
@@ -27,7 +27,7 @@ class PlaylistAdapter(private val playlists: List<PlaylistData>) : RecyclerView.
         private val playlistName: TextView = itemView.findViewById(R.id.playlist_name)
         private val songCount: TextView = itemView.findViewById(R.id.song_count)
 
-        fun bind(playlist: PlaylistData) {
+        fun bind(playlist: Playlist) {
             playlistName.text = playlist.name
             songCount.text = "Songs: ${playlist.timestamp}"
         }
