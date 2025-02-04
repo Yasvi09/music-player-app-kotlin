@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import android.util.Log
 import java.time.LocalDateTime
 
+
 class PlaylistRepository {
     private val TAG = "PlaylistRepository"
 
@@ -27,9 +28,15 @@ class PlaylistRepository {
 
     suspend fun getAllPlaylists(): List<Playlist> = withContext(Dispatchers.IO) {
         try {
+            val isConnected = MySQLDatabase.connect()
+            if (!isConnected) {
+                Log.e(TAG, "Database is not connected")
+                return@withContext emptyList()
+            }
             val query = "SELECT _id, name, timestamp FROM PlaylistDatabase ORDER BY timestamp DESC"
             val result = MySQLDatabase.executeQuery(query) ?: return@withContext emptyList()
 
+            Log.e("Playlist","${result}")
             result.rows.map { row ->
                 Playlist(
                     id = row.getString("_id") ?: "",
@@ -38,7 +45,7 @@ class PlaylistRepository {
                 )
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error getting playlists: ${e.message}")
+            Log.e("Playlist", "Error getting playlists: ${e.message}")
             emptyList()
         }
     }

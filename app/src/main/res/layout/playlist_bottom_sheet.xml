@@ -6,9 +6,20 @@
     android:background="@drawable/playlist_bg"
     android:padding="16dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlist_recycler_view"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:text="Select Playlist"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:paddingBottom="16dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlist_selection_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="300dp"/>
 
 </LinearLayout>
