@@ -296,14 +296,15 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         position = intent.getIntExtra("position", -1)
         val currentPosition = intent.getIntExtra("current_position", 0)
         val sender = intent.getStringExtra("sender")
-        listSongs = if (sender != null && sender == "albumDetails") {
-            intent.getParcelableArrayListExtra<MusicFiles>("albumFiles") ?: arrayListOf()
-        } else {
-            musicFiles
+
+        // Update how we get the songs list based on the sender
+        listSongs = when (sender) {
+            "albumDetails" -> intent.getParcelableArrayListExtra<MusicFiles>("albumFiles") ?: arrayListOf()
+            "playlistSongs" -> ArrayList(PlaylistSongsActivity.currentPlaylistSongs) // Use the playlist songs
+            else -> musicFiles
         }
 
-        if (listSongs != null && position != -1) {
-
+        if (listSongs.isNotEmpty() && position != -1) {
             MainActivity.SHOW_MINI_PLAYER = true
             MainActivity.PATH_TO_FRAG = listSongs[position].path
             MainActivity.ARTIST_TO_FRAG = listSongs[position].artist
@@ -314,7 +315,7 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
 
             val intent = Intent(this, MusicService::class.java)
             intent.putExtra("servicePosition", position)
-            intent.putExtra("seekTo", currentPosition) // Pass the position to seek to
+            intent.putExtra("seekTo", currentPosition)
             startService(intent)
 
             val editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit()
@@ -322,7 +323,6 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
             editor.putString(ARTIST_NAME, listSongs[position].artist)
             editor.putString(SONG_NAME, listSongs[position].title)
             editor.apply()
-
         }
     }
 

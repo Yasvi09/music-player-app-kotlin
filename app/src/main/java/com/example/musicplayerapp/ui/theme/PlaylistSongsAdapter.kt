@@ -40,7 +40,6 @@ class PlaylistSongsAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val song = songs[position]
-
         holder.musicFileName.text = song.title
 
         // Load album art
@@ -54,10 +53,10 @@ class PlaylistSongsAdapter(
         // Handle item click to play music
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, PlayerActivity::class.java).apply {
-                // Set the static playlist in PlayerActivity
-                PlayerActivity.listSongs = ArrayList(PlaylistSongsActivity.currentPlaylistSongs)
                 putExtra("position", position)
                 putExtra("sender", "playlistSongs")
+                // Important: Set the static playlist in PlayerActivity
+                PlayerActivity.listSongs = ArrayList(songs)
             }
 
             // Set the mini player data
@@ -68,7 +67,6 @@ class PlaylistSongsAdapter(
 
             mContext.startActivity(intent)
         }
-
         // Handle menu click
         holder.menuMore.setOnClickListener { view ->
             val popupMenu = PopupMenu(mContext, view)
