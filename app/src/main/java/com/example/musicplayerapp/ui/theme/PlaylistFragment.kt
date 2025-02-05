@@ -111,15 +111,14 @@ class PlaylistFragment : Fragment() {
                     val noPlaylistTextView = view?.findViewById<TextView>(R.id.no_playlist_text)
                     if (allPlaylists.isEmpty()) {
                         noPlaylistTextView?.visibility = View.VISIBLE
-                    }
-                    else{
+                    } else {
                         noPlaylistTextView?.visibility = View.GONE
-                        allPlaylists.forEach {
-                            Log.d("Playlist", "ID: ${it.id}, Name: ${it.name}")
-                        }
                     }
 
-                    val adapter = PlaylistAdapter(allPlaylists)
+                    val adapter = PlaylistAdapter(allPlaylists) {
+                        // This will be called when a playlist is deleted
+                        loadPlaylists()
+                    }
                     playlistRecyclerView.adapter = adapter
                 }
             } catch (e: Exception) {
