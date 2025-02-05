@@ -23,7 +23,6 @@ class PlaylistSongsActivity : AppCompatActivity() {
     private var playlistMusicFiles = ArrayList<MusicFiles>()
 
     companion object {
-        // Static variable to hold the current playlist songs
         var currentPlaylistSongs = ArrayList<MusicFiles>()
     }
 
@@ -31,7 +30,12 @@ class PlaylistSongsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playlist_songs)
 
-        playlistId = intent.getStringExtra("playlistId") ?: return
+        playlistId = intent.getStringExtra("playlistId") ?: run {
+            Toast.makeText(this, "Invalid playlist", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         setupRecyclerView()
         loadSongs()
     }
@@ -42,23 +46,25 @@ class PlaylistSongsActivity : AppCompatActivity() {
     }
 
     private fun loadSongs() {
-        GlobalScope.launch {
+        lifecycleScope.launch {
             try {
                 val playlistSongs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
 
-                // Convert playlist songs to MusicFiles
-                playlistMusicFiles.clear()
-                for (playlistSong in playlistSongs) {
-                    // Find the corresponding MusicFile from MainActivity's musicFiles
-                    MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
-                        playlistMusicFiles.add(it)
-                    }
-                }
-
                 withContext(Dispatchers.Main) {
-                    if (playlistMusicFiles.isNotEmpty()) {
+                    // Convert playlist songs to MusicFiles
+                    playlistMusicFiles.clear()
+                    for (playlistSong in playlistSongs) {
+                        // Find the corresponding MusicFile from MainActivity's musicFiles
+                        MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
+                            playlistMusicFiles.add(it)
+                        }
+                    }
+
+                    if (playlistMusicFiles.isEmpty()) {
+                        onPlaylistEmpty()
+                    } else {
                         // Update the static currentPlaylistSongs
-                        currentPlaylistSongs = playlistMusicFiles
+                        currentPlaylistSongs = ArrayList(playlistMusicFiles)
 
                         playlistSongsAdapter = PlaylistSongsAdapter(
                             this@PlaylistSongsActivity,
@@ -67,12 +73,6 @@ class PlaylistSongsActivity : AppCompatActivity() {
                             lifecycleScope
                         )
                         recyclerView.adapter = playlistSongsAdapter
-                    } else {
-                        Toast.makeText(
-                            this@PlaylistSongsActivity,
-                            "No songs in this playlist",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
             } catch (e: Exception) {
@@ -82,16 +82,20 @@ class PlaylistSongsActivity : AppCompatActivity() {
                         "Failed to load songs: ${e.message}",
                         Toast.LENGTH_LONG
                     ).show()
+                    finish()
                 }
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // Refresh the playlist when coming back to this activity
-        if (::playlistId.isInitialized) {
-            loadSongs()
-        }
+    fun onPlaylistEmpty() {
+        Toast.makeText(this, "Playlist is empty", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clear the static list when activity is destroyed
+        currentPlaylistSongs.clear()
     }
 }

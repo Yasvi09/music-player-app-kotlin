@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayerapp.R
 import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PlaylistSongsAdapter(
     private val mContext: Context,
-    private val songs: List<MusicFiles>,
+    private val songs: MutableList<MusicFiles>,
     private val playlistId: String,
     private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.Adapter<PlaylistSongsAdapter.ViewHolder>() {
@@ -50,6 +52,21 @@ class PlaylistSongsAdapter(
             Glide.with(mContext).load(R.drawable.bewedoc).into(holder.musicImg)
         }
 
+        holder.menuMore.setOnClickListener { view ->
+            val popupMenu = PopupMenu(mContext, view)
+            popupMenu.menuInflater.inflate(R.menu.playlist_songs_popup, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.remove_playlist -> {
+                        removeSongFromPlaylist(song, position)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popupMenu.show()
+        }
+
         // Handle item click to play music
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, PlayerActivity::class.java).apply {
@@ -68,35 +85,34 @@ class PlaylistSongsAdapter(
 
             mContext.startActivity(intent)
         }
-        // Handle menu click
-        holder.menuMore.setOnClickListener { view ->
-            val popupMenu = PopupMenu(mContext, view)
-            popupMenu.menuInflater.inflate(R.menu.playlist_songs_popup, popupMenu.menu)
-            popupMenu.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.remove_playlist -> {
-                        removeSongFromPlaylist(song.path ?: "", position)
-                        true
-                    }
-                    else -> false
-                }
-            }
-            popupMenu.show()
-        }
+
     }
 
-    private fun removeSongFromPlaylist(songPath: String, position: Int) {
-        lifecycleScope.launch {
-            val success = playlistSongsRepository.removeSongFromPlaylist(songPath, playlistId)
-            if (success) {
-                // Update both the adapter's list and the static currentPlaylistSongs
-                (songs as MutableList).removeAt(position)
-                PlaylistSongsActivity.currentPlaylistSongs.removeAt(position)
-                notifyItemRemoved(position)
-                notifyItemRangeChanged(position, songs.size)
-                Toast.makeText(mContext, "Song removed from playlist", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(mContext, "Failed to remove song", Toast.LENGTH_SHORT).show()
+    private fun removeSongFromPlaylist(song: MusicFiles, position: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val success = playlistSongsRepository.removeSongFromPlaylist(song.path ?: "", playlistId)
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        // Remove from both adapter's list and static list
+                        songs.removeAt(position)
+                        PlaylistSongsActivity.currentPlaylistSongs.removeAt(position)
+                        notifyItemRemoved(position)
+                        notifyItemRangeChanged(position, songs.size)
+                        Toast.makeText(mContext, "Song removed from playlist", Toast.LENGTH_SHORT).show()
+
+                        // If playlist is empty, notify activity
+                        if (songs.isEmpty()) {
+                            (mContext as? PlaylistSongsActivity)?.onPlaylistEmpty()
+                        }
+                    } else {
+                        Toast.makeText(mContext, "Failed to remove song", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(mContext, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

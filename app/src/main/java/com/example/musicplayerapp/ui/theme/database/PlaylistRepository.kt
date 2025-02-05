@@ -34,29 +34,28 @@ class PlaylistRepository {
                 return@withContext emptyList()
             }
 
-            // Modified query to include song count
             val query = """
-                SELECT p._id, p.name, p.timestamp, 
-                COUNT(ps.song_id) as song_count 
-                FROM PlaylistDatabase p 
-                LEFT JOIN PlaylistSongs ps ON p._id = ps.playlist_id 
-                GROUP BY p._id, p.name, p.timestamp 
+                SELECT p._id, p.name, p.timestamp,
+                (SELECT COUNT(*) FROM PlaylistSongs ps WHERE ps.playlist_id = p._id) as song_count
+                FROM PlaylistDatabase p
                 ORDER BY p.timestamp DESC
             """.trimIndent()
 
-            val result = MySQLDatabase.executeQuery(query) ?: return@withContext emptyList()
+            val result = MySQLDatabase.executeQuery(query)
+            Log.d(TAG, "Query result: ${result?.rows?.size}")
 
-            result.rows.map { row ->
+            return@withContext result?.rows?.map { row ->
+                val songCount = row.getLong("song_count")?.toInt() ?: 0  // Convert Long to Int safely
                 Playlist(
                     id = row.getString("_id") ?: "",
                     name = row.getString("name") ?: "",
                     timestamp = row.getString("timestamp") ?: "",
-                    songCount = row.getInt("song_count") ?: 0
+                    songCount = songCount
                 )
-            }
+            } ?: emptyList()
         } catch (e: Exception) {
-            Log.e("Playlist", "Error getting playlists: ${e.message}")
-            emptyList()
+            Log.e(TAG, "Error getting playlists: ${e.message}", e)
+            return@withContext emptyList()
         }
     }
 
