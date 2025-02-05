@@ -26,17 +26,15 @@ class PlaylistAdapter(
 
     private var onPlaylistClickListener: ((Playlist) -> Unit)? = null
 
+    fun setOnPlaylistClickListener(listener: (Playlist) -> Unit) {
+        onPlaylistClickListener = listener
+    }
 
     inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playlistName: TextView = itemView.findViewById(R.id.playlist_name)
         val songCount: TextView = itemView.findViewById(R.id.song_count)
         val musicImg: ImageView = itemView.findViewById(R.id.music_img)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
-    }
-
-
-    fun setOnPlaylistClickListener(listener: (Playlist) -> Unit) {
-        onPlaylistClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -48,6 +46,7 @@ class PlaylistAdapter(
         val playlist = playlists[position]
         holder.playlistName.text = playlist.name
 
+        // Format song count text
         val songCountText = when (playlist.songCount) {
             0 -> "No songs"
             1 -> "1 song"
@@ -91,7 +90,7 @@ class PlaylistAdapter(
                 val success = playlistRepository.deletePlaylist(playlist.id)
                 if (success) {
                     Toast.makeText(context, "Playlist deleted successfully", Toast.LENGTH_SHORT).show()
-                    onPlaylistDeleted() // Refresh the playlist list
+                    onPlaylistDeleted()
                 } else {
                     Toast.makeText(context, "Failed to delete playlist", Toast.LENGTH_SHORT).show()
                 }

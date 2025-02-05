@@ -129,9 +129,16 @@ class PlaylistFragment : Fragment() {
                     }
 
                     val adapter = PlaylistAdapter(allPlaylists) {
-                        // This will be called when a playlist is deleted
+                        // This lambda is called when a playlist is deleted
                         loadPlaylists()
                     }
+
+                    adapter.setOnPlaylistClickListener { playlist ->
+                        val intent = Intent(context, PlaylistSongsActivity::class.java)
+                        intent.putExtra("playlistId", playlist.id)
+                        startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
+                    }
+
                     playlistRecyclerView.adapter = adapter
                 }
             } catch (e: Exception) {
