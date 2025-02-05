@@ -185,7 +185,6 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         nextThread!!.start()
     }
 
-
     override fun nextBtnClicked() {
         if (musicService!!.isPlaying()) {
             musicService!!.stop()

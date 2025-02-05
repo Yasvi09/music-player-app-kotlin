@@ -21,7 +21,6 @@ import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -43,7 +42,6 @@ class PlaylistFragment : Fragment() {
             }
         }
 
-        // Enable network on main thread (for testing only)
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 

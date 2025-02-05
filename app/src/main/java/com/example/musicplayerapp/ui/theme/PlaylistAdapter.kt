@@ -1,5 +1,6 @@
 package com.example.musicplayerapp.ui.theme
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,11 @@ class PlaylistAdapter(private val playlists: List<Playlist>) : RecyclerView.Adap
     override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
         val playlist = playlists[position]
         holder.bind(playlist)
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, PlaylistSongsActivity::class.java)
+            intent.putExtra("playlistId", playlist.id)
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = playlists.size
@@ -33,11 +39,6 @@ class PlaylistAdapter(private val playlists: List<Playlist>) : RecyclerView.Adap
         fun bind(playlist: Playlist) {
             playlistName.text = playlist.name
             songCount.text = "Songs: ${playlist.timestamp}"
-
-            Glide.with(itemView.context)
-                .load(R.drawable.ic_launcher_background)
-                .apply(RequestOptions.circleCropTransform())
-                .into(musicImg)
         }
     }
 }

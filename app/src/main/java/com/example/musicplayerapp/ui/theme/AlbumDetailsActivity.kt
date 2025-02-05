@@ -5,6 +5,7 @@ import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -48,7 +49,7 @@ class AlbumDetailsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (albumSongs.isNotEmpty()) {
-            albumDetailsAdapter = AlbumDetailsAdapter(this, albumSongs)
+            albumDetailsAdapter = AlbumDetailsAdapter(this, albumSongs,lifecycleScope)
             recyclerView.adapter = albumDetailsAdapter
             recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         }

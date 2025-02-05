@@ -26,11 +26,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class MusicAdapter(
-    private val mContext: Context,
-    private val mFiles: ArrayList<MusicFiles>,
-    private val lifecycleScope: LifecycleCoroutineScope
-) : RecyclerView.Adapter<MusicAdapter.MyViewHolder>() {
+class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<MusicFiles>, private val lifecycleScope: LifecycleCoroutineScope)
+    : RecyclerView.Adapter<MusicAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
@@ -93,7 +90,6 @@ class MusicAdapter(
             try {
                 val playlists = playlistRepository.getAllPlaylists()
                 Log.d("Playlist","Playlists:${playlists}")
-                //Log.d("Playlist", "ID: ${playlists[0].id}, Name: ${playlists[0].name}")
 
                 val adapter = PlaylistSelectionAdapter(playlists) { selectedPlaylist ->
                     lifecycleScope.launch {
@@ -107,27 +103,15 @@ class MusicAdapter(
 
                             withContext(Dispatchers.Main) {
                                 if (success) {
-                                    Toast.makeText(
-                                        mContext,
-                                        "Added to playlist: ${selectedPlaylist.name}",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(mContext, "Added to playlist: ${selectedPlaylist.name}", Toast.LENGTH_SHORT).show()
                                 } else {
-                                    Toast.makeText(
-                                        mContext,
-                                        "Failed to add to playlist",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(mContext, "Failed to add to playlist", Toast.LENGTH_SHORT).show()
                                 }
                                 bottomSheetDialog.dismiss()
                             }
                         } catch (e: Exception) {
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    mContext,
-                                    "Error adding song to playlist: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(mContext, "Error adding song to playlist: ${e.message}", Toast.LENGTH_SHORT).show()
                                 bottomSheetDialog.dismiss()
                             }
                         }
@@ -139,11 +123,7 @@ class MusicAdapter(
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        mContext,
-                        "Error loading playlists: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(mContext, "Error loading playlists: ${e.message}", Toast.LENGTH_LONG).show()
                     bottomSheetDialog.dismiss()
                 }
             }

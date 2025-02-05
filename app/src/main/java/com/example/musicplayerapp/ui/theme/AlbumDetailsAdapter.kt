@@ -4,6 +4,7 @@ import MusicFiles
 import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +12,19 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles: ArrayList<MusicFiles>) : RecyclerView.Adapter<AlbumDetailsAdapter.MyHolder>() {
+class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles: ArrayList<MusicFiles>,private val lifecycleScope: LifecycleCoroutineScope) : RecyclerView.Adapter<AlbumDetailsAdapter.MyHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
         val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
@@ -50,11 +58,12 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             popupMenu.show()
 
             popupMenu.setOnMenuItemClickListener { item ->
-                when(item.itemId){
-                    R.id.playlist ->{
-                        showBottomSheetDialog()
+                when (item.itemId) {
+                    R.id.playlist -> {
+                        showPlaylistSelectionDialog(position)
                         true
                     }
+
                     else -> false
                 }
             }
@@ -82,14 +91,60 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
         }
     }
 
-    private fun showBottomSheetDialog() {
-
-        val inflater = mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-
-        val bottomSheetView = inflater.inflate(R.layout.playlist_bottom_sheet, null)
-
+    private fun showPlaylistSelectionDialog(position: Int) {
         val bottomSheetDialog = BottomSheetDialog(mContext)
-        bottomSheetDialog.setContentView(bottomSheetView)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.playlist_bottom_sheet, null)
+        bottomSheetDialog.setContentView(view)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.playlist_selection_recycler)
+        recyclerView.layoutManager = LinearLayoutManager(mContext)
+
+        val playlistRepository = PlaylistRepository()
+        val playlistSongsRepository = PlaylistSongsRepository()
+
+        lifecycleScope.launch {
+            try {
+                val playlists = playlistRepository.getAllPlaylists()
+                Log.d("Playlist","Playlists:${playlists}")
+
+                val adapter = PlaylistSelectionAdapter(playlists) { selectedPlaylist ->
+                    lifecycleScope.launch {
+                        try {
+                            val song = albumFiles[position]
+                            val success = playlistSongsRepository.addSongToPlaylist(
+                                selectedPlaylist.id,
+                                song.path ?: "",
+
+                                )
+
+                            withContext(Dispatchers.Main) {
+                                if (success) {
+                                    Toast.makeText(mContext, "Added to playlist: ${selectedPlaylist.name}", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(mContext, "Failed to add to playlist", Toast.LENGTH_SHORT).show()
+                                }
+                                bottomSheetDialog.dismiss()
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(mContext, "Error adding song to playlist: ${e.message}", Toast.LENGTH_SHORT).show()
+                                bottomSheetDialog.dismiss()
+                            }
+                        }
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    recyclerView.adapter = adapter
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(mContext, "Error loading playlists: ${e.message}", Toast.LENGTH_LONG).show()
+                    bottomSheetDialog.dismiss()
+                }
+            }
+        }
+
         bottomSheetDialog.show()
     }
 

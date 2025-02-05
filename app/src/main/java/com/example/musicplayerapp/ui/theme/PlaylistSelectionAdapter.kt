@@ -8,9 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
 import com.example.musicplayerapp.ui.theme.database.Playlist
 
-class PlaylistSelectionAdapter(
-    private val playlists: List<Playlist>,
-    private val onPlaylistSelected: (Playlist) -> Unit
+class PlaylistSelectionAdapter(private val playlists: List<Playlist>, private val onPlaylistSelected: (Playlist) -> Unit
 ) : RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -18,8 +16,7 @@ class PlaylistSelectionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.playlist_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
         return ViewHolder(view)
     }
 
