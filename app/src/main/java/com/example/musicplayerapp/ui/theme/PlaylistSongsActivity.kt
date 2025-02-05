@@ -16,15 +16,17 @@ import kotlinx.coroutines.withContext
 
 class PlaylistSongsActivity : AppCompatActivity() {
 
+    companion object {
+        var currentPlaylistSongs = ArrayList<MusicFiles>()
+        const val RESULT_PLAYLIST_MODIFIED = 100
+    }
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var playlistSongsAdapter: PlaylistSongsAdapter
     private val playlistSongsRepository = PlaylistSongsRepository()
     private lateinit var playlistId: String
     private var playlistMusicFiles = ArrayList<MusicFiles>()
-
-    companion object {
-        var currentPlaylistSongs = ArrayList<MusicFiles>()
-    }
+    private var isPlaylistModified = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,29 @@ class PlaylistSongsActivity : AppCompatActivity() {
 
         setupRecyclerView()
         loadSongs()
+    }
+
+    fun onPlaylistEmpty() {
+        isPlaylistModified = true
+        Toast.makeText(this, "Playlist is empty", Toast.LENGTH_SHORT).show()
+        setResult(RESULT_PLAYLIST_MODIFIED)
+        finish()
+    }
+
+    fun onSongRemoved() {
+        isPlaylistModified = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        currentPlaylistSongs.clear()
+    }
+
+    override fun finish() {
+        if (isPlaylistModified) {
+            setResult(RESULT_PLAYLIST_MODIFIED)
+        }
+        super.finish()
     }
 
     private fun setupRecyclerView() {
@@ -86,16 +111,5 @@ class PlaylistSongsActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    fun onPlaylistEmpty() {
-        Toast.makeText(this, "Playlist is empty", Toast.LENGTH_SHORT).show()
-        finish()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Clear the static list when activity is destroyed
-        currentPlaylistSongs.clear()
     }
 }

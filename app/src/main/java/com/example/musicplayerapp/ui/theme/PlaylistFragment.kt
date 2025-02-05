@@ -1,5 +1,6 @@
 package com.example.musicplayerapp.ui.theme
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
 import com.example.musicplayerapp.ui.theme.database.MySQLDatabase
+import com.example.musicplayerapp.ui.theme.database.Playlist
 import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -32,25 +34,11 @@ class PlaylistFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-
-        lifecycleScope.launch {
-            try {
-                MySQLDatabase.connect()
-                loadPlaylists()
-            } catch (e: Exception) {
-                Toast.makeText(context, "Failed to connect to database: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-        }
-
-        val policy = ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
-
         val view = inflater.inflate(R.layout.fragment_playlist, container, false)
         playlistRecyclerView = view.findViewById(R.id.recyclerView)
         addPlaylistBtn = view.findViewById(R.id.add_playlist)
 
         playlistRepository = PlaylistRepository()
-
         playlistRecyclerView.layoutManager = LinearLayoutManager(context)
 
         addPlaylistBtn.setOnClickListener {
@@ -58,6 +46,31 @@ class PlaylistFragment : Fragment() {
         }
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadPlaylists()
+    }
+
+    private fun createPlaylistAdapter(allPlaylists: List<Playlist>) {
+        val adapter = PlaylistAdapter(allPlaylists) {
+            // Playlist delete callback
+            loadPlaylists()
+        }
+        adapter.setOnPlaylistClickListener { playlist ->
+            val intent = Intent(context, PlaylistSongsActivity::class.java)
+            intent.putExtra("playlistId", playlist.id)
+            startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
+        }
+        playlistRecyclerView.adapter = adapter
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED) {
+            loadPlaylists()
+        }
     }
 
     private fun showCreatePlaylistDialog() {

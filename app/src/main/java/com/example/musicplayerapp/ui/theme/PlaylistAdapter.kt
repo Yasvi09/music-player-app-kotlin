@@ -24,11 +24,19 @@ class PlaylistAdapter(
     private val onPlaylistDeleted: () -> Unit
 ) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
+    private var onPlaylistClickListener: ((Playlist) -> Unit)? = null
+
+
     inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playlistName: TextView = itemView.findViewById(R.id.playlist_name)
         val songCount: TextView = itemView.findViewById(R.id.song_count)
         val musicImg: ImageView = itemView.findViewById(R.id.music_img)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+    }
+
+
+    fun setOnPlaylistClickListener(listener: (Playlist) -> Unit) {
+        onPlaylistClickListener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -40,7 +48,6 @@ class PlaylistAdapter(
         val playlist = playlists[position]
         holder.playlistName.text = playlist.name
 
-        // Format song count text based on number of songs
         val songCountText = when (playlist.songCount) {
             0 -> "No songs"
             1 -> "1 song"
@@ -50,9 +57,7 @@ class PlaylistAdapter(
 
         // Handle item click for opening playlist
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, PlaylistSongsActivity::class.java)
-            intent.putExtra("playlistId", playlist.id)
-            holder.itemView.context.startActivity(intent)
+            onPlaylistClickListener?.invoke(playlist)
         }
 
         // Handle three-dot menu click
