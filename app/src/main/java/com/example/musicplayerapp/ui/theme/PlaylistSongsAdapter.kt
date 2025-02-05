@@ -55,7 +55,6 @@ class PlaylistSongsAdapter(
             val intent = Intent(mContext, PlayerActivity::class.java).apply {
                 putExtra("position", position)
                 putExtra("sender", "playlistSongs")
-                // Important: Set the static playlist in PlayerActivity
                 PlayerActivity.listSongs = ArrayList(songs)
             }
 
@@ -64,6 +63,8 @@ class PlaylistSongsAdapter(
             MainActivity.PATH_TO_FRAG = song.path
             MainActivity.ARTIST_TO_FRAG = song.artist
             MainActivity.SONG_NAME_TO_FRAG = song.title
+            // Set the source for the mini player
+            NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "playlist"
 
             mContext.startActivity(intent)
         }

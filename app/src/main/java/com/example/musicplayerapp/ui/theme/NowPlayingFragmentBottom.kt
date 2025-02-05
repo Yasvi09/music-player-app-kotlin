@@ -41,6 +41,7 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
         const val MUSIC_FILE = "STORED_MUSIC"
         const val ARTIST_NAME = "ARTIST NAME"
         const val SONG_NAME = "SONG NAME"
+        var CURRENT_SONG_SOURCE = "mainList"
     }
 
     private var isServiceBound = false
@@ -81,19 +82,27 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
 
         val cardBottomPlayer: View? = view.findViewById(R.id.card_bottom_player)
         cardBottomPlayer?.setOnClickListener {
-            // Check if music service is ready and we have valid data
-            if (musicService != null && musicService!!.mediaPlayer != null &&
-                MainActivity.PATH_TO_FRAG != null && musicService!!.position >= 0) {
-
+            if (musicService != null && musicService!!.mediaPlayer != null && PATH_TO_FRAG != null) {
                 val intent = Intent(context, PlayerActivity::class.java)
                 intent.putExtra("position", musicService!!.position)
-                // Pass the current playback position
                 intent.putExtra("current_position", musicService!!.getCurrentPosition())
-                // If the song is from album details, pass that information
-                val albumFiles = intent.getParcelableArrayListExtra<MusicFiles>("albumFiles")
-                if (albumFiles !=null && albumFiles.isNotEmpty()) {
-                    intent.putExtra("sender", "albumDetails")
+
+                // Set the correct song list based on the source
+                when (CURRENT_SONG_SOURCE) {
+                    "playlist" -> {
+                        intent.putExtra("sender", "playlistSongs")
+                        PlayerActivity.listSongs = ArrayList(PlaylistSongsActivity.currentPlaylistSongs)
+                    }
+                    "album" -> {
+                        intent.putExtra("sender", "albumDetails")
+                        // Album songs should already be in PlayerActivity.listSongs
+                    }
+                    else -> {
+                        intent.putExtra("sender", "mainList")
+                        PlayerActivity.listSongs = MainActivity.musicFiles
+                    }
                 }
+
                 startActivity(intent)
             }
         }

@@ -46,6 +46,8 @@ class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, PlayerActivity::class.java)
             intent.putExtra("position", position)
+            // Set the source for the mini player
+            NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "mainList"
             mContext.startActivity(intent)
         }
 

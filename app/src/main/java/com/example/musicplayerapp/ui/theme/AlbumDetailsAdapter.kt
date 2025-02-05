@@ -47,8 +47,10 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
             val intent = Intent(mContext, PlayerActivity::class.java).apply {
                 putExtra("sender", "albumDetails")
                 putExtra("position", position)
-                putParcelableArrayListExtra("albumFiles", albumFiles) // Pass albumFiles here
+                putParcelableArrayListExtra("albumFiles", albumFiles)
             }
+            // Set the source for the mini player
+            NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "album"
             mContext.startActivity(intent)
         }
 
