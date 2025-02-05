@@ -1,9 +1,10 @@
 package com.example.musicplayerapp.ui.theme
 
-import android.annotation.SuppressLint
+import MusicFiles
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
@@ -19,38 +20,78 @@ class PlaylistSongsActivity : AppCompatActivity() {
     private lateinit var playlistSongsAdapter: PlaylistSongsAdapter
     private val playlistSongsRepository = PlaylistSongsRepository()
     private lateinit var playlistId: String
+    private var playlistMusicFiles = ArrayList<MusicFiles>()
 
-    @SuppressLint("MissingInflatedId")
+    companion object {
+        // Static variable to hold the current playlist songs
+        var currentPlaylistSongs = ArrayList<MusicFiles>()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_playlist_songs)
 
-        // Get playlist ID from Intent
         playlistId = intent.getStringExtra("playlistId") ?: return
+        setupRecyclerView()
+        loadSongs()
+    }
 
+    private fun setupRecyclerView() {
         recyclerView = findViewById(R.id.playlistSongrecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        loadSongs()
     }
 
     private fun loadSongs() {
         GlobalScope.launch {
             try {
-                val songs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
+                val playlistSongs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
+
+                // Convert playlist songs to MusicFiles
+                playlistMusicFiles.clear()
+                for (playlistSong in playlistSongs) {
+                    // Find the corresponding MusicFile from MainActivity's musicFiles
+                    MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
+                        playlistMusicFiles.add(it)
+                    }
+                }
+
                 withContext(Dispatchers.Main) {
-                    if (songs.isNotEmpty()) {
-                        playlistSongsAdapter = PlaylistSongsAdapter(songs)
+                    if (playlistMusicFiles.isNotEmpty()) {
+                        // Update the static currentPlaylistSongs
+                        currentPlaylistSongs = playlistMusicFiles
+
+                        playlistSongsAdapter = PlaylistSongsAdapter(
+                            this@PlaylistSongsActivity,
+                            playlistMusicFiles,
+                            playlistId,
+                            lifecycleScope
+                        )
                         recyclerView.adapter = playlistSongsAdapter
                     } else {
-                        Toast.makeText(this@PlaylistSongsActivity, "No songs in this playlist", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@PlaylistSongsActivity,
+                            "No songs in this playlist",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@PlaylistSongsActivity, "Failed to load songs: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@PlaylistSongsActivity,
+                        "Failed to load songs: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh the playlist when coming back to this activity
+        if (::playlistId.isInitialized) {
+            loadSongs()
         }
     }
 }
