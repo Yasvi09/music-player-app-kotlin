@@ -15,7 +15,7 @@ class PlaylistRepository {
         try {
             val playlistId = UUID.randomUUID().toString()
             val timestamp = LocalDateTime.now().toString()
-            val query = "INSERT INTO PlaylistDatabase (_id, name, timestamp) VALUES (?, ?, ?)"  // Changed 'id' to '_id'
+            val query = "INSERT INTO PlaylistDatabase (_id, name, timestamp) VALUES (?, ?, ?)"
 
             MySQLDatabase.executeQuery(query, listOf(playlistId, name, timestamp))
             Log.d(TAG, "Playlist created successfully")
@@ -61,11 +61,10 @@ class PlaylistRepository {
 
     suspend fun deletePlaylist(playlistId: String): Boolean = withContext(Dispatchers.IO) {
         try {
-            // First delete all songs in the playlist
+
             val deletePlaylistSongsQuery = "DELETE FROM PlaylistSongs WHERE playlist_id = ?"
             MySQLDatabase.executeQuery(deletePlaylistSongsQuery, listOf(playlistId))
 
-            // Then delete the playlist itself
             val deletePlaylistQuery = "DELETE FROM PlaylistDatabase WHERE _id = ?"
             MySQLDatabase.executeQuery(deletePlaylistQuery, listOf(playlistId))
 

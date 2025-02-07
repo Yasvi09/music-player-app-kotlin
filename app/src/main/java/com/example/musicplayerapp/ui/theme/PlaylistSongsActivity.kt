@@ -76,7 +76,7 @@ class PlaylistSongsActivity : AppCompatActivity() {
                 val playlistSongs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
 
                 withContext(Dispatchers.Main) {
-                    // Convert playlist songs to MusicFiles
+
                     playlistMusicFiles.clear()
                     for (playlistSong in playlistSongs) {
                         // Find the corresponding MusicFile from MainActivity's musicFiles

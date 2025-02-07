@@ -35,6 +35,7 @@ class PlaylistAdapter(
         val songCount: TextView = itemView.findViewById(R.id.song_count)
         val musicImg: ImageView = itemView.findViewById(R.id.music_img)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+        val playlistInitial:TextView=itemView.findViewById(R.id.playlist_initial)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -46,20 +47,16 @@ class PlaylistAdapter(
         val playlist = playlists[position]
         holder.playlistName.text = playlist.name
 
-        // Format song count text
-        val songCountText = when (playlist.songCount) {
-            0 -> "No songs"
-            1 -> "1 song"
-            else -> "${playlist.songCount} songs"
-        }
+        val songCountText = "Songs: ${playlist.songCount}"
         holder.songCount.text = songCountText
 
-        // Handle item click for opening playlist
+        val firstletter=playlist.name.firstOrNull()?.toString()?.uppercase()?: "?"
+        holder.playlistInitial.text=firstletter
+
         holder.itemView.setOnClickListener {
             onPlaylistClickListener?.invoke(playlist)
         }
 
-        // Handle three-dot menu click
         holder.menuMore.setOnClickListener { view ->
             showPopupMenu(view, playlist, holder.itemView.context)
         }

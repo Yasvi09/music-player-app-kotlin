@@ -67,7 +67,6 @@ class PlaylistSongsAdapter(
             popupMenu.show()
         }
 
-        // Handle item click to play music
         holder.itemView.setOnClickListener {
             val intent = Intent(mContext, PlayerActivity::class.java).apply {
                 putExtra("position", position)
@@ -75,7 +74,6 @@ class PlaylistSongsAdapter(
                 PlayerActivity.listSongs = ArrayList(songs)
             }
 
-            // Set the mini player data
             MainActivity.SHOW_MINI_PLAYER = true
             MainActivity.PATH_TO_FRAG = song.path
             MainActivity.ARTIST_TO_FRAG = song.artist
@@ -94,14 +92,13 @@ class PlaylistSongsAdapter(
                 val success = playlistSongsRepository.removeSongFromPlaylist(song.path ?: "", playlistId)
                 withContext(Dispatchers.Main) {
                     if (success) {
-                        // Remove from both adapter's list and static list
+
                         songs.removeAt(position)
                         PlaylistSongsActivity.currentPlaylistSongs.removeAt(position)
                         notifyItemRemoved(position)
                         notifyItemRangeChanged(position, songs.size)
                         Toast.makeText(mContext, "Song removed from playlist", Toast.LENGTH_SHORT).show()
 
-                        // If playlist is empty, notify activity
                         if (songs.isEmpty()) {
                             (mContext as? PlaylistSongsActivity)?.onPlaylistEmpty()
                         }

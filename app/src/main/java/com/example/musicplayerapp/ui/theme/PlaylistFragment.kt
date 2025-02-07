@@ -20,6 +20,7 @@ import com.example.musicplayerapp.R
 import com.example.musicplayerapp.ui.theme.database.MySQLDatabase
 import com.example.musicplayerapp.ui.theme.database.Playlist
 import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ class PlaylistFragment : Fragment() {
     private lateinit var playlistRecyclerView: RecyclerView
     private lateinit var addPlaylistBtn: FloatingActionButton
     private lateinit var playlistRepository: PlaylistRepository
+    private lateinit var playlistSongsRepository: PlaylistSongsRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -39,6 +41,7 @@ class PlaylistFragment : Fragment() {
         addPlaylistBtn = view.findViewById(R.id.add_playlist)
 
         playlistRepository = PlaylistRepository()
+        playlistSongsRepository = PlaylistSongsRepository()
         playlistRecyclerView.layoutManager = LinearLayoutManager(context)
 
         addPlaylistBtn.setOnClickListener {
@@ -53,18 +56,18 @@ class PlaylistFragment : Fragment() {
         loadPlaylists()
     }
 
-    private fun createPlaylistAdapter(allPlaylists: List<Playlist>) {
-        val adapter = PlaylistAdapter(allPlaylists) {
-            // Playlist delete callback
-            loadPlaylists()
+        private fun createPlaylistAdapter(allPlaylists: List<Playlist>) {
+            val adapter = PlaylistAdapter(allPlaylists) {
+                // Playlist delete callback
+                loadPlaylists()
+            }
+            adapter.setOnPlaylistClickListener { playlist ->
+                val intent = Intent(context, PlaylistSongsActivity::class.java)
+                intent.putExtra("playlistId", playlist.id)
+                startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
+            }
+            playlistRecyclerView.adapter = adapter
         }
-        adapter.setOnPlaylistClickListener { playlist ->
-            val intent = Intent(context, PlaylistSongsActivity::class.java)
-            intent.putExtra("playlistId", playlist.id)
-            startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
-        }
-        playlistRecyclerView.adapter = adapter
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -129,14 +132,11 @@ class PlaylistFragment : Fragment() {
                     }
 
                     val adapter = PlaylistAdapter(allPlaylists) {
-                        // This lambda is called when a playlist is deleted
                         loadPlaylists()
                     }
 
                     adapter.setOnPlaylistClickListener { playlist ->
-                        val intent = Intent(context, PlaylistSongsActivity::class.java)
-                        intent.putExtra("playlistId", playlist.id)
-                        startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
+                        checkPlaylistAndOpenActivity(playlist.id)
                     }
 
                     playlistRecyclerView.adapter = adapter
@@ -144,6 +144,22 @@ class PlaylistFragment : Fragment() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Failed to load playlists: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun checkPlaylistAndOpenActivity(playlistId: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val songs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
+            withContext(Dispatchers.Main) {
+                if (songs.isNotEmpty()) {
+                    val intent = Intent(requireContext(), PlaylistSongsActivity::class.java)
+                    intent.putExtra("playlistId", playlistId)
+                    startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
+                } else {
+
+                    Toast.makeText(requireContext(), "Playlist is empty", Toast.LENGTH_SHORT).show()
                 }
             }
         }
