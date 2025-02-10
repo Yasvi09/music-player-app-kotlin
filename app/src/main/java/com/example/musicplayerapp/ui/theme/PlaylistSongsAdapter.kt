@@ -5,6 +5,9 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,10 +34,25 @@ class PlaylistSongsAdapter(
 
     private val playlistSongsRepository = PlaylistSongsRepository()
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val musicImg: ImageView = itemView.findViewById(R.id.music_img)
         val musicFileName: TextView = itemView.findViewById(R.id.music_file_name)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+
+        // Add a drag handle or make the whole item draggable
+        init {
+            itemView.setOnLongClickListener {
+                // Optional: Provide haptic feedback
+                val vibrator = mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(50)
+                }
+                true
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

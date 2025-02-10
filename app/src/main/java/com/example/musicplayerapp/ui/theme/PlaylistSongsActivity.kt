@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
@@ -21,6 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Collections
 
 class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
 
@@ -142,6 +144,48 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
 
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Add ItemTouchHelper for drag and drop
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, // Enable drag and drop vertically
+            0 // Disable swipe
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                source: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = source.adapterPosition
+                val toPosition = target.adapterPosition
+
+                // Update both lists to maintain consistency
+                Collections.swap(playlistMusicFiles, fromPosition, toPosition)
+                Collections.swap(currentPlaylistSongs, fromPosition, toPosition)
+
+                // Notify adapter of move
+                playlistSongsAdapter.notifyItemMoved(fromPosition, toPosition)
+
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                // Not used
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    viewHolder?.itemView?.alpha = 0.5f
+                }
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                viewHolder.itemView.alpha = 1.0f
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     fun onPlaylistEmpty() {
@@ -217,6 +261,7 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
                             lifecycleScope
                         )
                         recyclerView.adapter = playlistSongsAdapter
+                        setupRecyclerView() // Add this line to enable drag-drop
                     }
                 }
             } catch (e: Exception) {
