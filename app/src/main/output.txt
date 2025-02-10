@@ -1,0 +1,3722 @@
+The following text represents a project with code. The structure of the text consists of sections beginning with ----, followed by a single line containing the file path and file name, and then a variable number of lines containing the file contents. The text representing the project ends when the symbols --END-- are encountered. Any further text beyond --END-- is meant to be interpreted as instructions using the aforementioned project as context.
+----
+AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".ui.theme.ApplicationClass"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        tools:targetApi="31">
+        <activity
+            android:name=".ui.theme.PlaylistSongsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.theme.AlbumDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.theme.PlayerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.theme.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".ui.theme.NotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="actionprevious" />
+                <action android:name="actionnext" />
+                <action android:name="actionplay" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".ui.theme.MusicService"
+            android:enabled="true" />
+    </application>
+
+</manifest>
+----
+res\xml\data_extraction_rules.xml
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- TODO: Use <include> and <exclude> to control what is backed up.
+        <include .../>
+        <exclude .../>
+        -->
+    </cloud-backup>
+    <!--
+    <device-transfer>
+        <include .../>
+        <exclude .../>
+    </device-transfer>
+    -->
+</data-extraction-rules>
+----
+res\xml\backup_rules.xml
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample backup rules file; uncomment and customize as necessary.
+   See https://developer.android.com/guide/topics/data/autobackup
+   for details.
+   Note: This file is ignored for devices older that API 31
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<full-backup-content>
+    <!--
+   <include domain="sharedpref" path="."/>
+   <exclude domain="sharedpref" path="device.xml"/>
+-->
+</full-backup-content>
+----
+res\values\themes.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowDisablePreview">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogueTheme</item>
+    </style>
+
+    <style name="AppBottomSheetDialogueTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModelStyle</item>
+    </style>
+
+    <style name="AppModelStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/playlist_bg</item> <!-- Match with your screen background -->
+    </style>
+
+</resources>
+----
+res\values\strings.xml
+<resources>
+    <string name="app_name">Music Player App</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
+----
+res\values\colors.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#1B1A1C</color>
+    <color name="colorPrimaryDark">#151515</color>
+    <color name="spotify_green">#1DB954</color>
+    <color name="dark_gray">#626567  </color>
+    <color name="gray">#B3B3B3</color>
+</resources>
+----
+res\mipmap-anydpi\ic_launcher_round.xml
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+----
+res\mipmap-anydpi\ic_launcher.xml
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
+----
+res\menu\popup.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Add to Playlist"
+        android:id="@+id/playlist"/>
+</menu>
+----
+res\menu\playlist_songs_popup.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Remove from Playlist"
+        android:id="@+id/remove_playlist"/>
+</menu>
+----
+res\menu\playlist_popup.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/delete_playlist"
+        android:title="Delete Playlist"/>
+</menu>
+----
+res\layout\playlist_item.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/audio_item"
+    android:background="@drawable/playlist_item_bg"
+    android:layout_width="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/music_img"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/playlist_bg_image"
+        android:padding="5dp"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/playlist_initial"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:layout_alignStart="@id/music_img"
+        android:layout_alignEnd="@id/music_img"
+        android:layout_alignTop="@id/music_img"
+        android:layout_alignBottom="@id/music_img"/>
+
+    <TextView
+        android:id="@+id/playlist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="File Name"
+        android:layout_toEndOf="@+id/music_img"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/song_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="File Name"
+        android:layout_toEndOf="@+id/music_img"
+        android:layout_below="@+id/playlist_name"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/menuMore"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_more"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:padding="5dp"/>
+</RelativeLayout>
+----
+res\layout\playlist_bottom_sheet.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/playlist_bg"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Playlist"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:paddingBottom="16dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlist_selection_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="300dp"/>
+
+</LinearLayout>
+----
+res\layout\music_items.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/audio_item"
+    android:background="#111111"
+    android:layout_width="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/music_img"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_launcher_background"
+        android:padding="5dp"/>
+
+    <TextView
+        android:id="@+id/music_file_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="File Name"
+        android:layout_toEndOf="@+id/music_img"
+        android:layout_marginStart="10dp"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/menuMore"
+        android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/menuMore"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_more"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:padding="5dp"/>
+</RelativeLayout>
+----
+res\layout\fragment_songs.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.theme.SongsFragment">
+
+   <androidx.recyclerview.widget.RecyclerView
+       android:id="@+id/recyclerView"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:background="@color/colorPrimary" />
+</RelativeLayout>
+
+----
+res\layout\fragment_playlist.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.theme.PlaylistFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/no_playlist_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No playlist found"
+        android:textSize="16dp"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add"
+        android:focusable="true"
+        android:clickable="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"/>
+</RelativeLayout>
+----
+res\layout\fragment_now_playing_bottom.xml
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.theme.NowPlayingFragmentBottom">
+
+    <RelativeLayout
+        android:id="@+id/card_bottom_player"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:padding="5dp">
+        <ImageView
+            android:id="@+id/bottom_album_art"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/bewedoc"
+            android:scaleType="centerCrop"/>
+        <ImageView
+            android:id="@+id/skip_next_bottom"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_skip_next"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/play_pause_miniPlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:layout_toStartOf="@+id/skip_next_bottom"
+            android:layout_marginEnd="10dp"
+            app:fabSize="mini"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/song_name_miniPlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Name Is Here"
+            android:textColor="#fff"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/bottom_album_art"
+            android:textSize="18dp"
+            android:maxLines="1"
+            android:layout_toStartOf="@+id/play_pause_miniPlayer"/>
+
+        <TextView
+            android:id="@+id/song_artist_miniPlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Song Artist"
+            android:textColor="#fff"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/bottom_album_art"
+            android:layout_below="@+id/song_name_miniPlayer"
+            android:textSize="15dp"
+            android:maxLines="1"
+            android:layout_toStartOf="@+id/play_pause_miniPlayer"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
+----
+res\layout\fragment_album.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.theme.AlbumFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary" />
+
+</RelativeLayout>
+----
+res\layout\custom_dialogue.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:background="@drawable/dialogue_bg">
+
+
+    <TextView
+        android:id="@+id/dialogMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Are you sure you want to proceed?"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:paddingBottom="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/dialogMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:id="@+id/yesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="YES"
+            android:textSize="16sp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/teal_700"
+            android:textColor="@color/white"
+            android:paddingHorizontal="24dp" />
+
+        <Button
+            android:id="@+id/noButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NO"
+            android:layout_marginStart="16dp"
+            android:textSize="16sp"
+            android:backgroundTint="@color/teal_700"
+            android:textColor="@color/white"
+            android:paddingHorizontal="24dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+----
+res\layout\bottom_sheet.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/playlist_bg"
+    android:padding="30dp"
+    android:elevation="8dp">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Playlist"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:paddingBottom="30dp" />
+
+    <EditText
+        android:id="@+id/et_playlist_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Playlist Name"
+        android:padding="14dp"
+        android:textSize="16dp"
+        android:background="@drawable/edittext_spotify"
+        android:textColor="@color/white"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="30dp">
+
+        <Button
+            android:id="@+id/btn_create"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Create"
+            android:backgroundTint="@color/teal_700"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:padding="12dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/button_spotify"/>
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Cancel"
+            android:backgroundTint="@color/dark_gray"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:padding="12dp"
+            android:background="@drawable/button_spotify" />
+    </LinearLayout>
+
+</LinearLayout>
+
+----
+res\layout\album_item.xml
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="170dp"
+    android:layout_height="200dp"
+    android:id="@+id/album_items"
+    app:cardCornerRadius="10dp"
+    android:layout_margin="10dp"
+    app:cardElevation="10dp">
+
+    <RelativeLayout
+        android:id="@+id/relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimary">
+        <ImageView
+            android:id="@+id/album_image"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:src="@drawable/ic_launcher_background"/>
+        <TextView
+            android:id="@+id/album_name"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="Album"
+            android:textColor="#fff"
+            android:singleLine="true"
+            android:gravity="center_horizontal"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
+----
+res\layout\activity_playlist_songs.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.theme.PlaylistSongsActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlistSongrecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/frag_bottom_player"
+        android:background="@color/colorPrimary"/>
+
+    <FrameLayout
+        android:id="@+id/frag_bottom_player"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <fragment
+            android:name="com.example.musicplayerapp.ui.theme.NowPlayingFragmentBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_now_playing_bottom" />
+    </FrameLayout>
+
+</RelativeLayout>
+----
+res\layout\activity_player.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mContainer"
+    android:background="@drawable/main_bg"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.theme.PlayerActivity">
+
+    <RelativeLayout
+        android:id="@+id/layout_top_btn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/gradient_bg"
+        android:layout_alignParentTop="true">
+        <ImageView
+            android:id="@+id/back_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/baseline_chevron"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Now Playing"
+            android:textColor="@color/white"
+            android:layout_toEndOf="@+id/back_btn"
+            android:layout_toStartOf="@+id/menu_btn"
+            android:gravity="center_horizontal"
+            android:background="@android:color/transparent"
+            android:textSize="18dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/menu_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_below="@+id/layout_top_btn">
+        <ImageView
+            android:id="@+id/cover_art"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/bewedoc"
+            android:scaleType="centerCrop"/>
+        <ImageView
+            android:id="@+id/imageViewGredient"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/gradient_bg"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/song_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This is Song name"
+        android:layout_below="@+id/card"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"/>
+
+    <TextView
+        android:id="@+id/song_artist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This is Song Artist"
+        android:layout_below="@+id/song_name"
+        android:textColor="@color/white"
+        android:gravity="center_horizontal"
+        android:textSize="18dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"/>
+
+    <RelativeLayout
+        android:id="@+id/relative_layout_for_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginBottom="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/gradient_bg">
+        <ImageView
+            android:id="@+id/id_shuffle"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_shuffle_off"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="32dp"/>
+
+        <ImageView
+            android:id="@+id/id_prev"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_skip_previous"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/play_pause"
+            android:layout_marginEnd="16dp"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/play_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:focusable="true"
+            android:clickable="true"/>
+
+        <ImageView
+            android:id="@+id/id_next"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_skip_next"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/play_pause"
+            android:layout_marginStart="16dp"/>
+
+        <ImageView
+            android:id="@+id/id_repeat"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_repeat_off"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="32dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/seek_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_above="@+id/relative_layout_for_bottom">
+
+        <TextView
+            android:id="@+id/durationplayed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1:28"
+            android:textColor="@color/white"
+            android:layout_marginStart="10dp"
+            android:layout_alignParentStart="true"/>
+        <TextView
+            android:id="@+id/durationTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4:28"
+            android:textColor="@color/white"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"/>
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
+----
+res\layout\activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.theme.MainActivity">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorGravity="center"
+        app:tabTextColor="@color/white"
+        app:tabIndicatorHeight="40dp"
+        app:tabIndicatorColor="#009688"
+        app:tabIndicator="@drawable/tab_indicator"/>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tab_layout"
+        android:layout_alignBottom="@+id/frag_bottom_player"/>
+
+    <FrameLayout
+        android:id="@+id/frag_bottom_player"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.example.musicplayerapp.ui.theme.NowPlayingFragmentBottom"
+            tools:layout="@layout/fragment_now_playing_bottom" />
+    </FrameLayout>
+
+</RelativeLayout>
+----
+res\layout\activity_album_details.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".ui.theme.AlbumDetailsActivity">
+
+    <ImageView
+        android:id="@+id/albumPhoto"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:src="@drawable/bewedoc"
+        android:scaleType="centerCrop"/>
+
+    <ImageView
+        android:id="@+id/gradient"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:src="@drawable/gradient_bg"
+        android:scaleType="centerCrop"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/albumPhoto"/>
+</RelativeLayout>
+----
+res\drawable\tab_indicator.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <gradient android:centerColor="@color/colorPrimaryDark"
+        android:angle="0"/>
+</shape>
+----
+res\drawable\playlist_item_bg.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorPrimaryDark"/>
+    <corners android:radius="10dp"/>
+</shape>
+----
+res\drawable\playlist_bg.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorPrimary"/>
+    <corners android:topLeftRadius="40dp"
+        android:topRightRadius="40dp"/>
+</shape>
+----
+res\drawable\main_bg.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <solid android:color="@color/colorPrimary"/>
+</shape>
+----
+res\drawable\ic_skip_previous.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M6,6h2v12L6,18zM9.5,12l8.5,6L18,6z"/>
+    
+</vector>
+
+----
+res\drawable\ic_skip_next.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M6,18l8.5,-6L6,6v12zM16,6v12h2V6h-2z"/>
+    
+</vector>
+
+----
+res\drawable\ic_shuffle_on.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#2196F3" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M10.59,9.17L5.41,4 4,5.41l5.17,5.17 1.42,-1.41zM14.5,4l2.04,2.04L4,18.59 5.41,20 17.96,7.46 20,9.5L20,4h-5.5zM14.83,13.41l-1.41,1.41 3.13,3.13L14.5,20L20,20v-5.5l-2.04,2.04 -3.13,-3.13z"/>
+    
+</vector>
+
+----
+res\drawable\ic_shuffle_off.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M10.59,9.17L5.41,4 4,5.41l5.17,5.17 1.42,-1.41zM14.5,4l2.04,2.04L4,18.59 5.41,20 17.96,7.46 20,9.5L20,4h-5.5zM14.83,13.41l-1.41,1.41 3.13,3.13L14.5,20L20,20v-5.5l-2.04,2.04 -3.13,-3.13z"/>
+    
+</vector>
+
+----
+res\drawable\ic_repeat_on.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#2196F3" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M7,7h10v3l4,-4 -4,-4v3L5,5v6h2L7,7zM17,17L7,17v-3l-4,4 4,4v-3h12v-6h-2v4z"/>
+    
+</vector>
+
+----
+res\drawable\ic_repeat_off.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M7,7h10v3l4,-4 -4,-4v3L5,5v6h2L7,7zM17,17L7,17v-3l-4,4 4,4v-3h12v-6h-2v4z"/>
+    
+</vector>
+
+----
+res\drawable\ic_play.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M8,5v14l11,-7z"/>
+    
+</vector>
+
+----
+res\drawable\ic_pause.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M6,19h4L10,5L6,5v14zM14,5v14h4L18,5h-4z"/>
+    
+</vector>
+
+----
+res\drawable\ic_more.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="20dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="20dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M12,8c1.1,0 2,-0.9 2,-2s-0.9,-2 -2,-2 -2,0.9 -2,2 0.9,2 2,2zM12,10c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2zM12,16c-1.1,0 -2,0.9 -2,2s0.9,2 2,2 2,-0.9 2,-2 -0.9,-2 -2,-2z"/>
+    
+</vector>
+
+----
+res\drawable\ic_menu.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M3,18h18v-2L3,16v2zM3,13h18v-2L3,11v2zM3,6v2h18L21,6L3,6z"/>
+    
+</vector>
+
+----
+res\drawable\ic_launcher_foreground.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="85.84757"
+                android:endY="92.4963"
+                android:startX="42.9492"
+                android:startY="49.59793"
+                android:type="linear">
+                <item
+                    android:color="#44000000"
+                    android:offset="0.0" />
+                <item
+                    android:color="#00000000"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
+        android:strokeWidth="1"
+        android:strokeColor="#00000000" />
+</vector>
+----
+res\drawable\ic_launcher_background.xml
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#3DDC84"
+        android:pathData="M0,0h108v108h-108z" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M9,0L9,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,0L19,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,0L29,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,0L39,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,0L49,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,0L59,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,0L69,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,0L79,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M89,0L89,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M99,0L99,108"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,9L108,9"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,19L108,19"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,29L108,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,39L108,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,49L108,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,59L108,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,69L108,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,79L108,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,89L108,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,99L108,99"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,29L89,29"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,39L89,39"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,49L89,49"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,59L89,59"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,69L89,69"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,79L89,79"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M29,19L29,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,19L39,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M49,19L49,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M59,19L59,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M69,19L69,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M79,19L79,89"
+        android:strokeWidth="0.8"
+        android:strokeColor="#33FFFFFF" />
+</vector>
+
+----
+res\drawable\ic_add.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#000000" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M19,13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+    
+</vector>
+
+----
+res\drawable\gradient_bg.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <gradient android:startColor="@color/colorPrimary" android:angle="90"/>
+</shape>
+----
+res\drawable\edittext_spotify.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/dark_gray"/>
+    <corners android:radius="10dp"/>
+    <padding android:left="10dp" android:right="10dp"/>
+</shape>
+
+----
+res\drawable\dialogue_bg.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/colorPrimaryDark"/>
+    <corners android:radius="20dp"/>
+</shape>
+----
+res\drawable\button_spotify.xml
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="20dp"/>
+    <padding android:left="10dp" android:right="10dp"/>
+</shape>
+
+----
+res\drawable\baseline_chevron.xml
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="24dp" android:tint="#FFFFFF" android:viewportHeight="24" android:viewportWidth="24" android:width="24dp">
+      
+    <path android:fillColor="@android:color/white" android:pathData="M15.41,7.41L14,6l-6,6 6,6 1.41,-1.41L10.83,12z"/>
+    
+</vector>
+
+----
+java\com\example\musicplayerapp\ui\theme\ViewPagerAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+
+class ViewPagerAdapter(manager: FragmentManager) :
+    FragmentPagerAdapter(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+
+    private val fragments: MutableList<Fragment> = ArrayList()
+    private val titles: MutableList<String> = ArrayList()
+
+    fun addFragments(fragment: Fragment, title: String) {
+        fragments.add(fragment)
+        titles.add(title)
+    }
+
+    override fun getItem(position: Int): Fragment = fragments[position]
+
+    override fun getCount(): Int = fragments.size
+
+    override fun getPageTitle(position: Int): CharSequence = titles[position]
+}
+----
+java\com\example\musicplayerapp\ui\theme\SongsFragment.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.musicplayerapp.R
+
+class SongsFragment : Fragment() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var musicAdapter: MusicAdapter
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_songs, container, false)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.setHasFixedSize(true)
+
+        if (MainActivity.musicFiles.isNotEmpty()) {
+            musicAdapter = MusicAdapter(requireContext(), MainActivity.musicFiles, lifecycleScope)
+            recyclerView.adapter = musicAdapter
+            recyclerView.layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        }
+        return view
+    }
+}
+----
+java\com\example\musicplayerapp\ui\theme\PlaylistSongsAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.content.Context
+import android.content.Intent
+import android.media.MediaMetadataRetriever
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class PlaylistSongsAdapter(
+    private val mContext: Context,
+    private val songs: MutableList<MusicFiles>,
+    private val playlistId: String,
+    private val lifecycleScope: LifecycleCoroutineScope
+) : RecyclerView.Adapter<PlaylistSongsAdapter.ViewHolder>() {
+
+    private val playlistSongsRepository = PlaylistSongsRepository()
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val musicImg: ImageView = itemView.findViewById(R.id.music_img)
+        val musicFileName: TextView = itemView.findViewById(R.id.music_file_name)
+        val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val song = songs[position]
+        holder.musicFileName.text = song.title
+
+        // Load album art
+        val image = getAlbumArt(song.path)
+        if (image != null) {
+            Glide.with(mContext).asBitmap().load(image).into(holder.musicImg)
+        } else {
+            Glide.with(mContext).load(R.drawable.bewedoc).into(holder.musicImg)
+        }
+
+        holder.menuMore.setOnClickListener { view ->
+            val popupMenu = PopupMenu(mContext, view)
+            popupMenu.menuInflater.inflate(R.menu.playlist_songs_popup, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.remove_playlist -> {
+                        removeSongFromPlaylist(song, position)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popupMenu.show()
+        }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(mContext, PlayerActivity::class.java).apply {
+                putExtra("position", position)
+                putExtra("sender", "playlistSongs")
+                PlayerActivity.listSongs = ArrayList(songs)
+            }
+
+            MainActivity.SHOW_MINI_PLAYER = true
+            MainActivity.PATH_TO_FRAG = song.path
+            MainActivity.ARTIST_TO_FRAG = song.artist
+            MainActivity.SONG_NAME_TO_FRAG = song.title
+            // Set the source for the mini player
+            NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "playlist"
+
+            mContext.startActivity(intent)
+        }
+
+    }
+
+    private fun removeSongFromPlaylist(song: MusicFiles, position: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val success = playlistSongsRepository.removeSongFromPlaylist(song.path ?: "", playlistId)
+                withContext(Dispatchers.Main) {
+                    if (success) {
+
+                        songs.removeAt(position)
+                        PlaylistSongsActivity.currentPlaylistSongs.removeAt(position)
+                        notifyItemRemoved(position)
+                        notifyItemRangeChanged(position, songs.size)
+                        Toast.makeText(mContext, "Song removed from playlist", Toast.LENGTH_SHORT).show()
+
+                        if (songs.isEmpty()) {
+                            (mContext as? PlaylistSongsActivity)?.onPlaylistEmpty()
+                        }
+                    } else {
+                        Toast.makeText(mContext, "Failed to remove song", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(mContext, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun getAlbumArt(uri: String?): ByteArray? {
+        if (uri == null) return null
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            retriever.release()
+        }
+    }
+
+    override fun getItemCount() = songs.size
+}
+----
+java\com\example\musicplayerapp\ui\theme\PlaylistSongsActivity.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class PlaylistSongsActivity : AppCompatActivity() {
+
+    companion object {
+        var currentPlaylistSongs = ArrayList<MusicFiles>()
+        const val RESULT_PLAYLIST_MODIFIED = 100
+    }
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var playlistSongsAdapter: PlaylistSongsAdapter
+    private val playlistSongsRepository = PlaylistSongsRepository()
+    private lateinit var playlistId: String
+    private var playlistMusicFiles = ArrayList<MusicFiles>()
+    private var isPlaylistModified = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_playlist_songs)
+
+        playlistId = intent.getStringExtra("playlistId") ?: run {
+            Toast.makeText(this, "Invalid playlist", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        setupRecyclerView()
+        loadSongs()
+    }
+
+    fun onPlaylistEmpty() {
+        isPlaylistModified = true
+        Toast.makeText(this, "Playlist is empty", Toast.LENGTH_SHORT).show()
+        setResult(RESULT_PLAYLIST_MODIFIED)
+        finish()
+    }
+
+    fun onSongRemoved() {
+        isPlaylistModified = true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        currentPlaylistSongs.clear()
+    }
+
+    override fun finish() {
+        if (isPlaylistModified) {
+            setResult(RESULT_PLAYLIST_MODIFIED)
+        }
+        super.finish()
+    }
+
+    private fun setupRecyclerView() {
+        recyclerView = findViewById(R.id.playlistSongrecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+    }
+
+    private fun loadSongs() {
+        lifecycleScope.launch {
+            try {
+                val playlistSongs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
+
+                withContext(Dispatchers.Main) {
+
+                    playlistMusicFiles.clear()
+                    for (playlistSong in playlistSongs) {
+
+                        MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
+                            playlistMusicFiles.add(it)
+                        }
+                    }
+
+                    if (playlistMusicFiles.isEmpty()) {
+                        onPlaylistEmpty()
+                    } else {
+
+                        currentPlaylistSongs = ArrayList(playlistMusicFiles)
+
+                        playlistSongsAdapter = PlaylistSongsAdapter(this@PlaylistSongsActivity, playlistMusicFiles, playlistId, lifecycleScope)
+                        recyclerView.adapter = playlistSongsAdapter
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@PlaylistSongsActivity, "Failed to load songs: ${e.message}", Toast.LENGTH_LONG).show()
+                    finish()
+                }
+            }
+        }
+    }
+}
+----
+java\com\example\musicplayerapp\ui\theme\PlaylistSelectionAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.Playlist
+
+class PlaylistSelectionAdapter(private val playlists: List<Playlist>, private val onPlaylistSelected: (Playlist) -> Unit,private val hideMenu: Boolean
+) : RecyclerView.Adapter<PlaylistSelectionAdapter.ViewHolder>() {
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val playlistName: TextView = itemView.findViewById(R.id.playlist_name)
+        val songCount: TextView = itemView.findViewById(R.id.song_count)
+        val playlistInitial:TextView=itemView.findViewById(R.id.playlist_initial)
+        val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val playlist = playlists[position]
+        holder.playlistName.text = playlist.name
+        val songCountText = "Songs: ${playlist.songCount}"
+        holder.songCount.text = songCountText
+
+        val firstletter=playlist.name.firstOrNull()?.toString()?.uppercase()?: "?"
+        holder.playlistInitial.text=firstletter
+
+        holder.menuMore.visibility = if (hideMenu) View.GONE else View.VISIBLE
+
+        holder.itemView.setOnClickListener {
+            onPlaylistSelected(playlist)
+        }
+    }
+
+    override fun getItemCount() = playlists.size
+}
+----
+java\com\example\musicplayerapp\ui\theme\PlaylistFragment.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.Playlist
+import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class PlaylistFragment : Fragment() {
+    private lateinit var playlistRecyclerView: RecyclerView
+    private lateinit var addPlaylistBtn: FloatingActionButton
+    private lateinit var playlistRepository: PlaylistRepository
+    private lateinit var playlistSongsRepository: PlaylistSongsRepository
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_playlist, container, false)
+        playlistRecyclerView = view.findViewById(R.id.recyclerView)
+        addPlaylistBtn = view.findViewById(R.id.add_playlist)
+
+        playlistRepository = PlaylistRepository()
+        playlistSongsRepository = PlaylistSongsRepository()
+        playlistRecyclerView.layoutManager = LinearLayoutManager(context)
+
+
+        addPlaylistBtn.setOnClickListener {
+            showCreatePlaylistDialog()
+        }
+
+        return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadPlaylists()
+    }
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED) {
+            loadPlaylists()
+        }
+    }
+
+    private fun showCreatePlaylistDialog() {
+        val bottomSheetDialog = BottomSheetDialog(requireContext())
+        val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet, null)
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+
+        val etPlaylistName = bottomSheetView.findViewById<EditText>(R.id.et_playlist_name)
+        val btnCreate = bottomSheetView.findViewById<Button>(R.id.btn_create)
+        val btnCancel = bottomSheetView.findViewById<Button>(R.id.btn_cancel)
+
+        btnCreate.setOnClickListener {
+            val name = etPlaylistName.text.toString()
+            if (name.isNotBlank()) {
+                lifecycleScope.launch {
+                    try {
+                        val newPlaylist = playlistRepository.createPlaylist(name)
+                        if (newPlaylist != null) {
+                            Log.d("PlaylistFragment", "Playlist created: $newPlaylist")
+                            loadPlaylists()
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Playlist created successfully", Toast.LENGTH_SHORT).show()
+                                bottomSheetDialog.dismiss()
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(context, "Failed to create playlist", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Failed to create playlist: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+        }
+
+        btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun loadPlaylists() {
+        lifecycleScope.launch {
+            try {
+                val allPlaylists = playlistRepository.getAllPlaylists()
+                withContext(Dispatchers.Main) {
+                    val noPlaylistTextView = view?.findViewById<TextView>(R.id.no_playlist_text)
+                    if (allPlaylists.isEmpty()) {
+                        noPlaylistTextView?.visibility = View.VISIBLE
+                    } else {
+                        noPlaylistTextView?.visibility = View.GONE
+                    }
+
+                    val adapter = PlaylistAdapter(allPlaylists) {
+                        loadPlaylists()
+                    }
+
+                    adapter.setOnPlaylistClickListener { playlist ->
+                        checkPlaylistAndOpenActivity(playlist.id)
+                    }
+
+                    playlistRecyclerView.adapter = adapter
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Failed to load playlists: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun checkPlaylistAndOpenActivity(playlistId: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val songs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
+            withContext(Dispatchers.Main) {
+                if (songs.isNotEmpty()) {
+                    val intent = Intent(requireContext(), PlaylistSongsActivity::class.java)
+                    intent.putExtra("playlistId", playlistId)
+                    startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
+                } else {
+
+                    Toast.makeText(requireContext(), "Playlist is empty please add song", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+}
+----
+java\com\example\musicplayerapp\ui\theme\PlaylistAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.content.Context
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.Playlist
+import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+class PlaylistAdapter(
+    private val playlists: List<Playlist>,
+    private val onPlaylistDeleted: () -> Unit
+) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+
+    private var onPlaylistClickListener: ((Playlist) -> Unit)? = null
+
+    fun setOnPlaylistClickListener(listener: (Playlist) -> Unit) {
+        onPlaylistClickListener = listener
+    }
+
+    inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val playlistName: TextView = itemView.findViewById(R.id.playlist_name)
+        val songCount: TextView = itemView.findViewById(R.id.song_count)
+        val musicImg: ImageView = itemView.findViewById(R.id.music_img)
+        val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+        val playlistInitial:TextView=itemView.findViewById(R.id.playlist_initial)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
+        return PlaylistViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
+        val playlist = playlists[position]
+        holder.playlistName.text = playlist.name
+
+        val songCountText = "Songs: ${playlist.songCount}"
+        holder.songCount.text = songCountText
+
+        val firstletter=playlist.name.firstOrNull()?.toString()?.uppercase()?: "?"
+        holder.playlistInitial.text=firstletter
+
+        holder.itemView.setOnClickListener {
+            onPlaylistClickListener?.invoke(playlist)
+        }
+
+        holder.menuMore.setOnClickListener { view ->
+            showPopupMenu(view, playlist, holder.itemView.context)
+        }
+    }
+
+    private fun showPopupMenu(view: View, playlist: Playlist, context: Context) {
+        val popupMenu = PopupMenu(context, view)
+        popupMenu.menuInflater.inflate(R.menu.playlist_popup, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.delete_playlist -> {
+                    deletePlaylist(playlist, context)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popupMenu.show()
+    }
+
+    private fun deletePlaylist(playlist: Playlist, context: Context) {
+        val playlistRepository = PlaylistRepository()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                val success = playlistRepository.deletePlaylist(playlist.id)
+                if (success) {
+                    Toast.makeText(context, "Playlist deleted successfully", Toast.LENGTH_SHORT).show()
+                    onPlaylistDeleted()
+                } else {
+                    Toast.makeText(context, "Failed to delete playlist", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error deleting playlist: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = playlists.size
+}
+----
+java\com\example\musicplayerapp\ui\theme\PlayerActivity.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
+import android.support.v4.media.session.MediaSessionCompat
+import android.util.Log
+import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_NEXT
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_PLAY
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_PREVIOUS
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.CHANNEL_ID_2
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.ARTIST_NAME
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.MUSIC_FILE
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.MUSIC_LAST_PLAYED
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.SONG_NAME
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.musicFiles
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.File
+
+class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
+
+    var song_name: TextView? = null
+    var artist_name: TextView? = null
+    var duration_played: TextView? = null
+    var duration_total: TextView? = null
+    private lateinit var cover_art: ImageView
+    private lateinit var nextBtn: ImageView
+    private lateinit var prevBtn: ImageView
+    private lateinit var backBtn: ImageView
+    private lateinit var shuffleBtn: ImageView
+    private lateinit var repeatBtn: ImageView
+    private lateinit var playPauseBtn: FloatingActionButton
+    private lateinit var seekBar: SeekBar
+
+    private var position: Int = -1
+    companion object {
+        var listSongs: ArrayList<MusicFiles> = ArrayList()
+        var uri: Uri? = null
+    }
+
+    private val handler = Handler()
+    private var playThread: Thread? = null
+    private var prevThread: Thread? = null
+    private var nextThread: Thread? = null
+
+    private var musicService: MusicService? = null
+    private lateinit var mediaSessionCompat: MediaSessionCompat
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_player)
+
+        mediaSessionCompat = MediaSessionCompat(applicationContext, "My Audio")
+        mediaSessionCompat.isActive = true
+        initViews()
+        getIntentMethod()
+
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (musicService != null && fromUser) {
+                    musicService!!.seekTo(progress * 1000)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+
+        runOnUiThread(object : Runnable {
+            override fun run() {
+                if (musicService != null) {
+                    val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                    seekBar.progress = mCurrentPosition
+                    duration_played!!.text = formattedTime(mCurrentPosition)
+                }
+                handler.postDelayed(this, 1000)
+            }
+        })
+
+    }
+
+    override fun onResume() {
+        val intent = Intent(this, MusicService::class.java)
+        bindService(intent, this, BIND_AUTO_CREATE)
+        playThreadBtn()
+        nextThreadBtn()
+        prevThreadBtn()
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unbindService(this)
+    }
+
+    private fun prevThreadBtn() {
+        prevThread = Thread {
+            run {
+                prevBtn.setOnClickListener {
+                    prevBtnClicked()
+                }
+            }
+        }
+        prevThread!!.start()
+    }
+
+    override fun prevBtnClicked() {
+        if (musicService!!.isPlaying()) {
+            musicService!!.stop()
+            musicService!!.release()
+            position = if (position - 1 < 0) (listSongs.size - 1) else position - 1
+            uri = Uri.parse(listSongs[position].path)
+            musicService!!.createMediaPlayer(position)
+            uri?.let { metaData(it) }
+            song_name!!.text = listSongs[position].title
+            artist_name!!.text = listSongs[position].artist
+            seekBar.max = musicService!!.getDuration() / 1000
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    if (musicService != null) {
+                        val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                        seekBar.progress = mCurrentPosition
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            })
+            showNotification(R.drawable.ic_pause)
+            musicService!!.onCompleted()
+            playPauseBtn.setImageResource(R.drawable.ic_pause)
+            musicService!!.start()
+        } else {
+            musicService!!.stop()
+            musicService!!.release()
+            position = if (position - 1 < 0) (listSongs.size - 1) else position - 1
+            uri = Uri.parse(listSongs[position].path)
+            musicService!!.createMediaPlayer(position)
+            uri?.let { metaData(it) }
+            song_name!!.text = listSongs[position].title
+            artist_name!!.text = listSongs[position].artist
+            seekBar.max = musicService!!.getDuration() / 1000
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    if (musicService != null) {
+                        val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                        seekBar.progress = mCurrentPosition
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            })
+            showNotification(R.drawable.ic_play)
+            musicService!!.onCompleted()
+            playPauseBtn.setImageResource(R.drawable.ic_play)
+        }
+    }
+
+    private fun nextThreadBtn() {
+        nextThread = Thread {
+            nextBtn.setOnClickListener {
+                nextBtnClicked()
+            }
+        }
+        nextThread!!.start()
+    }
+
+    override fun nextBtnClicked() {
+        if (musicService!!.isPlaying()) {
+            musicService!!.stop()
+            musicService!!.release()
+            position = (position + 1) % listSongs.size
+            uri = Uri.parse(listSongs[position].path)
+            musicService!!.createMediaPlayer(position)
+            uri?.let { metaData(it) }
+            song_name!!.text = listSongs[position].title
+            artist_name!!.text = listSongs[position].artist
+            seekBar.max = musicService!!.getDuration() / 1000
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    if (musicService != null) {
+                        val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                        seekBar.progress = mCurrentPosition
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            })
+
+            showNotification(R.drawable.ic_pause)
+            musicService!!.onCompleted()
+            playPauseBtn.setImageResource(R.drawable.ic_pause)
+            musicService!!.start()
+        } else {
+            musicService!!.stop()
+            musicService!!.release()
+            position = (position + 1) % listSongs.size
+            uri = Uri.parse(listSongs[position].path)
+            musicService!!.createMediaPlayer(position)
+            uri?.let { metaData(it) }
+            song_name!!.text = listSongs[position].title
+            artist_name!!.text = listSongs[position].artist
+            seekBar.max = musicService!!.getDuration() / 1000
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    if (musicService != null) {
+                        val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                        seekBar.progress = mCurrentPosition
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            })
+            showNotification(R.drawable.ic_play)
+            musicService!!.onCompleted()
+            playPauseBtn.setImageResource(R.drawable.ic_play)
+        }
+    }
+
+    private fun playThreadBtn() {
+        playThread = Thread {
+            playPauseBtn.setOnClickListener {
+                playPauseBtnClicked()
+            }
+        }
+        playThread!!.start()
+    }
+
+    override fun playPauseBtnClicked() {
+        if (musicService!!.isPlaying()) {
+            playPauseBtn.setImageResource(R.drawable.ic_play)
+            showNotification(R.drawable.ic_play)
+            musicService!!.pause()
+            seekBar.max = musicService!!.getDuration() / 1000
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    if (musicService != null) {
+                        val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                        seekBar.progress = mCurrentPosition
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            })
+
+        } else {
+            showNotification(R.drawable.ic_pause)
+            playPauseBtn.setImageResource(R.drawable.ic_pause)
+            musicService!!.start()
+            seekBar.max = musicService!!.getDuration() / 1000
+            runOnUiThread(object : Runnable {
+                override fun run() {
+                    if (musicService != null) {
+                        val mCurrentPosition = musicService!!.getCurrentPosition() / 1000
+                        seekBar.progress = mCurrentPosition
+                    }
+                    handler.postDelayed(this, 1000)
+                }
+            })
+
+        }
+    }
+
+    private fun formattedTime(mCurrentPosition: Int): String {
+        var totalOut = ""
+        var totalNew = ""
+        val seconds = (mCurrentPosition % 60).toString()
+        val minutes = (mCurrentPosition / 60).toString()
+        totalOut = "$minutes:$seconds"
+        totalNew = "$minutes:0$seconds"
+        return if (seconds.length == 1) {
+            totalNew
+        } else {
+            totalOut
+        }
+    }
+
+    private fun getIntentMethod() {
+        position = intent.getIntExtra("position", -1)
+        val currentPosition = intent.getIntExtra("current_position", 0)
+        val sender = intent.getStringExtra("sender")
+
+        // Update how we get the songs list based on the sender
+        listSongs = when (sender) {
+            "albumDetails" -> intent.getParcelableArrayListExtra<MusicFiles>("albumFiles") ?: arrayListOf()
+            "playlistSongs" -> ArrayList(PlaylistSongsActivity.currentPlaylistSongs) // Use the playlist songs
+            else -> musicFiles
+        }
+
+        if (listSongs.isNotEmpty() && position != -1) {
+            MainActivity.SHOW_MINI_PLAYER = true
+            MainActivity.PATH_TO_FRAG = listSongs[position].path
+            MainActivity.ARTIST_TO_FRAG = listSongs[position].artist
+            MainActivity.SONG_NAME_TO_FRAG = listSongs[position].title
+
+            playPauseBtn.setImageResource(R.drawable.ic_pause)
+            uri = Uri.parse(listSongs[position].path)
+
+            val intent = Intent(this, MusicService::class.java)
+            intent.putExtra("servicePosition", position)
+            intent.putExtra("seekTo", currentPosition)
+            startService(intent)
+
+            val editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit()
+            editor.putString(MUSIC_FILE, uri.toString())
+            editor.putString(ARTIST_NAME, listSongs[position].artist)
+            editor.putString(SONG_NAME, listSongs[position].title)
+            editor.apply()
+        }
+    }
+
+    private fun initViews() {
+        song_name = findViewById(R.id.song_name)
+        artist_name = findViewById(R.id.song_artist)
+        duration_played = findViewById(R.id.durationplayed)
+        duration_total = findViewById(R.id.durationTotal)
+        cover_art = findViewById(R.id.cover_art)
+        nextBtn = findViewById(R.id.id_next)
+        prevBtn = findViewById(R.id.id_prev)
+        backBtn = findViewById(R.id.back_btn)
+        shuffleBtn = findViewById(R.id.id_shuffle)
+        repeatBtn = findViewById(R.id.id_repeat)
+        playPauseBtn = findViewById(R.id.play_pause)
+        seekBar = findViewById(R.id.seekBar)
+
+        backBtn.setOnClickListener {
+            super.onBackPressed()
+        }
+
+    }
+
+    private fun metaData(uri: Uri) {
+        val retriever = MediaMetadataRetriever()
+        try {
+            retriever.setDataSource(applicationContext, uri)
+            val durationTotal = listSongs[position].duration!!.toInt() / 1000
+            duration_total!!.text = formattedTime(durationTotal)
+
+            val art = retriever.embeddedPicture
+            if (art != null) {
+                Glide.with(this)
+                    .asBitmap()
+                    .load(art)
+                    .into(cover_art)
+            } else {
+                Glide.with(this)
+                    .asBitmap()
+                    .load(R.drawable.bewedoc)
+                    .into(cover_art)
+            }
+        } catch (e: Exception) {
+            Log.e("PlayerActivity", "Error retrieving metadata: ${e.message}")
+        }
+    }
+
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        val myBinder = service as MusicService.MyBinder
+        musicService = myBinder.getService()
+        musicService!!.setCallBack(this)
+       //  Toast.makeText(this, "Connected $musicService", Toast.LENGTH_SHORT).show()
+
+        musicService?.let {
+            seekBar.max = it.getDuration() / 1000
+        }
+
+        uri?.let { metaData(it) }
+        song_name!!.text = listSongs[position].title
+        artist_name!!.text = listSongs[position].artist
+        musicService!!.onCompleted()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName) {
+        musicService = null
+    }
+
+    fun showNotification(playPauseBtn: Int) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        val contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val prevIntent = Intent(this, NotificationReceiver::class.java).setAction(ACTION_PREVIOUS)
+        val prevPending = PendingIntent.getBroadcast(this, 0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        val pauseIntent = Intent(this, NotificationReceiver::class.java).setAction(ACTION_PLAY)
+        val pausePending = PendingIntent.getBroadcast(this, 0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        val nextIntent = Intent(this, NotificationReceiver::class.java).setAction(ACTION_NEXT)
+        val nextPending = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        val picture: ByteArray? = listSongs[position].path?.let { getAlbumArt(it) }
+        val thumb: Bitmap = if (picture != null) {
+            BitmapFactory.decodeByteArray(picture, 0, picture.size)
+        } else {
+            BitmapFactory.decodeResource(resources, R.drawable.bewedoc)
+        }
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID_2)
+            .setSmallIcon(playPauseBtn)
+            .setLargeIcon(thumb)
+            .setContentTitle(listSongs[position].title)
+            .setContentText(listSongs[position].artist)
+            .addAction(R.drawable.ic_skip_previous, "Previous", prevPending)
+            .addAction(playPauseBtn, "Pause", pausePending)
+            .addAction(R.drawable.ic_skip_next, "Next", nextPending)
+            .setStyle(androidx.media.app.NotificationCompat.MediaStyle()
+                .setMediaSession(mediaSessionCompat.sessionToken))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setOnlyAlertOnce(true)
+            .build()
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(0, notification)
+        Log.d("NotificationDebug", "Attempting to show notification")
+        try {
+            notificationManager.notify(0, notification)
+            Log.d("NotificationDebug", "Notification sent to system")
+        } catch (e: Exception) {
+            Log.e("NotificationDebug", "Error showing notification: ${e.message}")
+        }
+    }
+
+    private fun getAlbumArt(uri: String): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(uri)
+        return retriever.embeddedPicture
+    }
+
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\NowPlayingFragmentBottom.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.content.ComponentName
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.Intent
+import android.content.ServiceConnection
+import android.media.MediaMetadataRetriever
+import android.os.Bundle
+import android.os.IBinder
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.ARTIST_TO_FRAG
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.PATH_TO_FRAG
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.SHOW_MINI_PLAYER
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.SONG_NAME_TO_FRAG
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.IOException
+
+class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
+
+    private lateinit var nextBtn: ImageView
+    private lateinit var albumArt: ImageView
+    private lateinit var artist: TextView
+    private lateinit var songName: TextView
+    private lateinit var playPauseBtn: FloatingActionButton
+    private lateinit var view: View
+    var musicService: MusicService? = null
+
+
+    companion object {
+        const val MUSIC_LAST_PLAYED = "LAST_PLAYED"
+        const val MUSIC_FILE = "STORED_MUSIC"
+        const val ARTIST_NAME = "ARTIST NAME"
+        const val SONG_NAME = "SONG NAME"
+        var CURRENT_SONG_SOURCE = "mainList"
+    }
+
+    private var isServiceBound = false
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        view = inflater.inflate(R.layout.fragment_now_playing_bottom, container, false)
+        artist = view.findViewById(R.id.song_artist_miniPlayer)
+        songName = view.findViewById(R.id.song_name_miniPlayer)
+        albumArt = view.findViewById(R.id.bottom_album_art)
+        nextBtn = view.findViewById(R.id.skip_next_bottom)
+        playPauseBtn = view.findViewById(R.id.play_pause_miniPlayer)
+
+        nextBtn.setOnClickListener {
+            if (musicService != null && isServiceBound) {
+                musicService!!.nextBtnCicked()
+                activity?.let { updateUI() }
+            } else {
+                Toast.makeText(context, "Music service not ready", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        playPauseBtn.setOnClickListener {
+            if (musicService != null && isServiceBound) {
+                musicService!!.playPauseBtnClicked()
+                if (musicService!!.isPlaying()) {
+                    playPauseBtn.setImageResource(R.drawable.ic_pause)
+                } else {
+                    playPauseBtn.setImageResource(R.drawable.ic_play)
+                }
+            } else {
+                Toast.makeText(context, "Music service not ready", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val cardBottomPlayer: View? = view.findViewById(R.id.card_bottom_player)
+        cardBottomPlayer?.setOnClickListener {
+            if (musicService != null && musicService!!.mediaPlayer != null && PATH_TO_FRAG != null) {
+                val intent = Intent(context, PlayerActivity::class.java)
+                intent.putExtra("position", musicService!!.position)
+                intent.putExtra("current_position", musicService!!.getCurrentPosition())
+
+                // Set the correct song list based on the source
+                when (CURRENT_SONG_SOURCE) {
+                    "playlist" -> {
+                        intent.putExtra("sender", "playlistSongs")
+                        PlayerActivity.listSongs = ArrayList(PlaylistSongsActivity.currentPlaylistSongs)
+                    }
+                    "album" -> {
+                        intent.putExtra("sender", "albumDetails")
+                        // Album songs should already be in PlayerActivity.listSongs
+                    }
+                    else -> {
+                        intent.putExtra("sender", "mainList")
+                        PlayerActivity.listSongs = MainActivity.musicFiles
+                    }
+                }
+
+                startActivity(intent)
+            }
+        }
+
+        return view
+    }
+
+    private fun updateUI() {
+        if (activity == null) return
+
+        val editor = activity?.getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE)?.edit()
+        if (musicService != null && musicService!!.musicFiles != null && musicService!!.position >= 0
+            && musicService!!.position < musicService!!.musicFiles.size) {
+
+            editor?.putString(MUSIC_FILE, musicService!!.musicFiles[musicService!!.position].path)
+            editor?.putString(ARTIST_NAME, musicService!!.musicFiles[musicService!!.position].artist)
+            editor?.putString(SONG_NAME, musicService!!.musicFiles[musicService!!.position].title)
+            editor?.apply()
+
+            val preferences = activity?.getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE)
+            val path = preferences?.getString(MUSIC_FILE, null)
+            val artistName = preferences?.getString(ARTIST_NAME, null)
+            val songName = preferences?.getString(SONG_NAME, null)
+
+            if (path != null) {
+                SHOW_MINI_PLAYER = true
+                PATH_TO_FRAG = path
+                ARTIST_TO_FRAG = artistName
+                SONG_NAME_TO_FRAG = songName
+            } else {
+                SHOW_MINI_PLAYER = false
+                PATH_TO_FRAG = null
+                ARTIST_TO_FRAG = null
+                SONG_NAME_TO_FRAG = null
+            }
+
+            if (SHOW_MINI_PLAYER && PATH_TO_FRAG != null) {
+                updateBottomPlayerUI()
+            }
+        }
+    }
+
+    private fun updateBottomPlayerUI() {
+        if (context == null) return
+
+        val art = PATH_TO_FRAG?.let { getAlbumArt(it) }
+        if (art != null) {
+            Glide.with(requireContext()).load(art)
+                .into(albumArt)
+        } else {
+            Glide.with(requireContext()).load(R.drawable.bewedoc)
+                .into(albumArt)
+        }
+        songName.text = SONG_NAME_TO_FRAG
+        artist.text = ARTIST_TO_FRAG
+
+        updatePlayPauseButton()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (SHOW_MINI_PLAYER) {
+            if (PATH_TO_FRAG != null) {
+                context?.let {
+                    val intent = Intent(it, MusicService::class.java)
+                    it.bindService(intent, this, Context.BIND_AUTO_CREATE)
+                    updateBottomPlayerUI()
+                }
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (isServiceBound) {
+            context?.let {
+                it.unbindService(this)
+                isServiceBound = false
+            }
+        }
+    }
+
+    private fun getAlbumArt(uri: String): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: IOException) {
+                throw RuntimeException(e)
+            }
+        }
+    }
+
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        val binder = service as MusicService.MyBinder
+        musicService = binder.getService()
+        isServiceBound = true
+
+        // Update play/pause button state when service connects
+        musicService?.let {
+            updatePlayPauseButton()
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        musicService = null
+        isServiceBound = false
+    }
+
+    private fun updatePlayPauseButton() {
+        if (musicService?.mediaPlayer != null) {
+            playPauseBtn.setImageResource(
+                if (musicService!!.isPlaying()) R.drawable.ic_pause else R.drawable.ic_play
+            )
+        }
+    }
+
+
+}
+----
+java\com\example\musicplayerapp\ui\theme\NotificationReceiver.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_NEXT
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_PLAY
+import com.example.musicplayerapp.ui.theme.ApplicationClass.Companion.ACTION_PREVIOUS
+
+class NotificationReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val actionName = intent.action
+        val serviceIntent = Intent(context, MusicService::class.java)
+
+        actionName?.let {
+            when (it) {
+                ACTION_PLAY -> {
+                    serviceIntent.putExtra("ActionName", "playPause")
+                    context.startService(serviceIntent)
+                }
+                ACTION_NEXT -> {
+                    serviceIntent.putExtra("ActionName", "next")
+                    context.startService(serviceIntent)
+                }
+                ACTION_PREVIOUS -> {
+                    serviceIntent.putExtra("ActionName", "previous")
+                    context.startService(serviceIntent)
+                }
+
+                else -> {}
+            }
+        }
+    }
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\MusicService.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.app.Service
+import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Binder
+import android.os.IBinder
+import android.util.Log
+import android.widget.Toast
+
+class MusicService : Service(), MediaPlayer.OnCompletionListener {
+
+    private val mBinder: IBinder = MyBinder()
+    var mediaPlayer: MediaPlayer? = null
+    var musicFiles: ArrayList<MusicFiles> = ArrayList()
+    private var uri: Uri? = null
+    var position: Int = -1
+    private var actionPlaying: ActionPlaying? = null
+    companion object {
+        const val MUSIC_LAST_PLAYED = "LAST_PLAYED"
+        const val MUSIC_FILE = "STORED_MUSIC"
+        const val ARTIST_NAME = "ARTIST NAME"
+        const val SONG_NAME = "SONG NAME"
+    }
+
+
+
+    override fun onCreate() {
+        super.onCreate()
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        Log.e("Bind", "Method")
+        return mBinder
+    }
+
+    inner class MyBinder : Binder() {
+        fun getService(): MusicService {
+            return this@MusicService
+        }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val myPosition = intent?.getIntExtra("servicePosition", -1) ?: -1
+        val seekTo = intent?.getIntExtra("seekTo", 0) ?: 0
+        val actionName = intent?.getStringExtra("ActionName")
+
+        if (myPosition != -1) {
+            playMedia(myPosition)
+            // Seek to the saved position after creating the media player
+            mediaPlayer?.let {
+                if (seekTo > 0) {
+                    it.seekTo(seekTo)
+                }
+            }
+        }
+
+        actionName?.run {
+            when (this) {
+                "playPause" -> playPauseBtnClicked()
+                "next" -> nextBtnCicked()
+                "previous" -> previousBtnClicked()
+                else -> {}
+            }
+        }
+
+        return START_STICKY
+    }
+
+
+    private fun playMedia(startPosition: Int) {
+        musicFiles = PlayerActivity.listSongs!!
+        position = startPosition
+
+        if (mediaPlayer != null) {
+            mediaPlayer?.stop()
+            mediaPlayer?.release()
+            if (musicFiles.isNotEmpty()) {
+                createMediaPlayer(position)
+                mediaPlayer?.start()
+            }
+        } else {
+            createMediaPlayer(position)
+            mediaPlayer?.start()
+        }
+    }
+
+    fun start() {
+        mediaPlayer?.start()
+    }
+
+    fun isPlaying(): Boolean {
+        return mediaPlayer?.isPlaying ?: false
+    }
+
+    fun stop() {
+        mediaPlayer?.stop()
+    }
+
+    fun release() {
+        mediaPlayer?.release()
+    }
+
+    fun getDuration(): Int {
+        return mediaPlayer?.duration ?: 0
+    }
+
+    fun seekTo(position: Int) {
+        mediaPlayer?.seekTo(position)
+    }
+
+    fun getCurrentPosition(): Int {
+        return mediaPlayer?.currentPosition ?: 0
+    }
+
+    fun createMediaPlayer(positionInner: Int) {
+        position = positionInner
+        uri = Uri.parse(musicFiles[position].path)
+
+        val editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit()
+        editor.putString(MUSIC_FILE, uri.toString())
+        editor.putString(ARTIST_NAME, musicFiles[position].artist)
+        editor.putString(SONG_NAME, musicFiles[position].title)
+        editor.apply()
+
+        mediaPlayer = MediaPlayer.create(baseContext, uri)
+    }
+
+    fun pause() {
+        mediaPlayer?.pause()
+    }
+
+    fun onCompleted() {
+        mediaPlayer?.setOnCompletionListener(this)
+    }
+
+    override fun onCompletion(mp: MediaPlayer?) {
+        actionPlaying?.nextBtnClicked()
+
+        if (mediaPlayer != null) {
+            createMediaPlayer(position)
+            mediaPlayer?.start()
+            onCompleted()
+        }
+    }
+
+    fun setCallBack(actionPlaying: ActionPlaying) {
+        this.actionPlaying = actionPlaying
+    }
+
+    fun playPauseBtnClicked() {
+        actionPlaying?.playPauseBtnClicked()
+    }
+
+    fun previousBtnClicked() {
+        actionPlaying?.prevBtnClicked()
+    }
+
+    fun nextBtnCicked() {
+        actionPlaying?.nextBtnClicked()
+    }
+
+
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\MusicFiles.kt
+import android.os.Parcel
+import android.os.Parcelable
+
+data class MusicFiles(
+    var path: String? = null,
+    var title: String? = null,
+    var artist: String? = null,
+    var album: String? = null,
+    var duration: String? = null
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString()
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(path)
+        parcel.writeString(title)
+        parcel.writeString(artist)
+        parcel.writeString(album)
+        parcel.writeString(duration)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object CREATOR : Parcelable.Creator<MusicFiles> {
+        override fun createFromParcel(parcel: Parcel): MusicFiles {
+            return MusicFiles(parcel)
+        }
+
+        override fun newArray(size: Int): Array<MusicFiles?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\MusicAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.content.Context
+import android.content.Intent
+import android.media.MediaMetadataRetriever
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+
+class MusicAdapter(private val mContext: Context, private val mFiles: ArrayList<MusicFiles>, private val lifecycleScope: LifecycleCoroutineScope)
+    : RecyclerView.Adapter<MusicAdapter.MyViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
+        return MyViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.fileName.text = mFiles[position].title
+        val image = mFiles[position].path?.let { getAlbumArt(it) }
+        if (image != null) {
+            Glide.with(mContext).asBitmap().load(image).into(holder.albumArt)
+        } else {
+            Glide.with(mContext).load(R.drawable.error_image).into(holder.albumArt)
+        }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(mContext, PlayerActivity::class.java)
+            intent.putExtra("position", position)
+            // Set the source for the mini player
+            NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "mainList"
+            mContext.startActivity(intent)
+        }
+
+        holder.menuMore.setOnClickListener {
+            val popupMenu = PopupMenu(mContext, it)
+            popupMenu.menuInflater.inflate(R.menu.popup, popupMenu.menu)
+            popupMenu.show()
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.playlist -> {
+                        showPlaylistSelectionDialog(position)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = mFiles.size
+
+    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val fileName: TextView = itemView.findViewById(R.id.music_file_name)
+        val albumArt: ImageView = itemView.findViewById(R.id.music_img)
+        val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
+    }
+
+    private fun showPlaylistSelectionDialog(position: Int) {
+        val bottomSheetDialog = BottomSheetDialog(mContext)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.playlist_bottom_sheet, null)
+        bottomSheetDialog.setContentView(view)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.playlist_selection_recycler)
+        recyclerView.layoutManager = LinearLayoutManager(mContext)
+
+        val playlistRepository = PlaylistRepository()
+        val playlistSongsRepository = PlaylistSongsRepository()
+
+        lifecycleScope.launch {
+            try {
+                val playlists = playlistRepository.getAllPlaylists()
+                Log.d("Playlist","Playlists:${playlists}")
+
+                val adapter = PlaylistSelectionAdapter(playlists, { selectedPlaylist ->
+                    lifecycleScope.launch {
+                        try {
+                            val song = mFiles[position]
+                            val success = playlistSongsRepository.addSongToPlaylist(
+                                selectedPlaylist.id,
+                                song.path ?: "",
+
+                                )
+
+                            withContext(Dispatchers.Main) {
+                                if (success) {
+                                    Toast.makeText(mContext, "Added to playlist: ${selectedPlaylist.name}", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(mContext, "Failed to add to playlist", Toast.LENGTH_SHORT).show()
+                                }
+                                bottomSheetDialog.dismiss()
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(mContext, "Error adding song to playlist: ${e.message}", Toast.LENGTH_SHORT).show()
+                                bottomSheetDialog.dismiss()
+                            }
+                        }
+                    }
+                },hideMenu = true)
+
+                withContext(Dispatchers.Main) {
+                    recyclerView.adapter = adapter
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(mContext, "Error loading playlists: ${e.message}", Toast.LENGTH_LONG).show()
+                    bottomSheetDialog.dismiss()
+                }
+            }
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun getAlbumArt(uri: String): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: IOException) {
+                throw RuntimeException(e)
+            }
+        }
+    }
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\MainActivity.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.provider.MediaStore
+import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.viewpager.widget.ViewPager
+import com.example.musicplayerapp.R
+import com.google.android.material.tabs.TabLayout
+
+class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val REQUEST_CODE = 1
+        var musicFiles: ArrayList<MusicFiles> = ArrayList()
+        var albums :ArrayList<MusicFiles> =ArrayList()
+        const val MUSIC_LAST_PLAYED = "LAST_PLAYED"
+        const val MUSIC_FILE = "STORED_MUSIC"
+        var SHOW_MINI_PLAYER = false
+        var PATH_TO_FRAG: String? = null
+        var ARTIST_TO_FRAG: String? = null
+        var SONG_NAME_TO_FRAG: String? = null
+        const val ARTIST_NAME = "ARTIST NAME"
+        const val SONG_NAME = "SONG NAME"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        permission()
+    }
+
+    private fun permission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+ (API 33 and above) - Request READ_MEDIA_AUDIO
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_MEDIA_AUDIO), REQUEST_CODE)
+            } else {
+                musicFiles = getAllAudio(this)
+                initViewPager()
+            }
+        } else {
+            // Android 12 and below
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE)
+            } else {
+                musicFiles = getAllAudio(this)
+                initViewPager()
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                musicFiles = getAllAudio(this)
+                initViewPager()
+            } else {
+                val shouldShowRationale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_MEDIA_AUDIO)
+                } else {
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+
+                if (!shouldShowRationale) {
+                    // Permission denied and 'Don't ask again' was selected
+                    Toast.makeText(this, "Storage permission is required. Please enable it in settings.", Toast.LENGTH_LONG).show()
+                    openAppSettings()
+                } else {
+                    // Permission denied, but the user might allow it later
+                    Toast.makeText(this, "Permission Denied! Please allow storage access.", Toast.LENGTH_SHORT).show()
+                    permission() // Re-request permission
+                }
+            }
+        }
+    }
+    private fun openAppSettings() {
+        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("package:" + packageName)
+        startActivity(intent)
+    }
+
+    private fun initViewPager() {
+        val viewPager: ViewPager = findViewById(R.id.viewpager)
+        val tabLayout: TabLayout = findViewById(R.id.tab_layout)
+        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        viewPagerAdapter.addFragments(SongsFragment(), "Songs")
+        viewPagerAdapter.addFragments(AlbumFragment(), "Albums")
+        viewPagerAdapter.addFragments(PlaylistFragment(),"Playlist")
+        viewPager.adapter = viewPagerAdapter
+        tabLayout.setupWithViewPager(viewPager)
+    }
+
+    private fun getAllAudio(context: Context): ArrayList<MusicFiles> {
+
+        val duplicate = ArrayList<String>()
+        val tempAudioList = ArrayList<MusicFiles>()
+        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.ARTIST
+        )
+
+        val cursor = context.contentResolver.query(uri, projection, null, null, null)
+        cursor?.use {
+            while (it.moveToNext()) {
+                val album = it.getString(0)
+                val title = it.getString(1)
+                val duration = it.getString(2)
+                val path = it.getString(3)
+                val artist = it.getString(4)
+
+                val musicFile = MusicFiles(path, title, artist, album, duration)
+                tempAudioList.add(musicFile)
+                if (!duplicate.contains(album)) {
+                    albums.add(musicFile)
+                    duplicate.add(album)
+                }
+            }
+        }
+        return tempAudioList
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val preferences = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE)
+        val path = preferences.getString(MUSIC_FILE, null)
+        val artist = preferences.getString(ARTIST_NAME, null)
+        val songName = preferences.getString(SONG_NAME, null)
+
+        if (path != null) {
+            SHOW_MINI_PLAYER = true
+            PATH_TO_FRAG = path
+            ARTIST_TO_FRAG = artist
+            SONG_NAME_TO_FRAG = songName
+        } else {
+            SHOW_MINI_PLAYER = false
+            PATH_TO_FRAG = null
+            ARTIST_TO_FRAG = null
+            SONG_NAME_TO_FRAG = null
+        }
+    }
+
+}
+----
+java\com\example\musicplayerapp\ui\theme\ApplicationClass.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
+
+class ApplicationClass : Application() {
+
+    companion object {
+        const val CHANNEL_ID_1 = "channel1"
+        const val CHANNEL_ID_2 = "channel2"
+        const val ACTION_PREVIOUS = "actionprevious"
+        const val ACTION_NEXT = "actionnext"
+        const val ACTION_PLAY = "actionplay"
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannel()
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel1 = NotificationChannel(CHANNEL_ID_1, "Channel(1)", NotificationManager.IMPORTANCE_HIGH).apply {
+                description = "Channel 1 Desc.."
+            }
+
+            val channel2 = NotificationChannel(CHANNEL_ID_2, "Channel(2)", NotificationManager.IMPORTANCE_HIGH).apply {
+                description = "Channel 2 Desc.."
+            }
+
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel1)
+            notificationManager.createNotificationChannel(channel2)
+        }
+    }
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\AlbumFragment.kt
+package com.example.musicplayerapp.ui.theme
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.musicplayerapp.R
+
+class AlbumFragment : Fragment() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var albumAdapter: AlbumAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_album, container, false)
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView.setHasFixedSize(true)
+
+        if (MainActivity.albums.isNotEmpty()) {
+            albumAdapter = AlbumAdapter(requireContext(), MainActivity.albums)
+            recyclerView.adapter = albumAdapter
+            recyclerView.layoutManager = GridLayoutManager(requireContext(),2)
+        }
+        return view
+    }
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\AlbumDetailsAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.content.Context
+import android.content.Intent
+import android.media.MediaMetadataRetriever
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
+import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles: ArrayList<MusicFiles>,private val lifecycleScope: LifecycleCoroutineScope) : RecyclerView.Adapter<AlbumDetailsAdapter.MyHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
+        return MyHolder(view)
+    }
+
+    override fun getItemCount(): Int {
+        return albumFiles.size
+    }
+
+    override fun onBindViewHolder(holder: MyHolder, position: Int) {
+        holder.albumName.text = albumFiles[position].title
+        val image = albumFiles[position].path?.let { getAlbumArt(it) }
+        if (image != null) {
+            Glide.with(mContext).asBitmap().load(image).into(holder.albumImage)
+        } else {
+            Glide.with(mContext).load(R.drawable.error_image).into(holder.albumImage)
+        }
+        holder.itemView.setOnClickListener {
+            val intent = Intent(mContext, PlayerActivity::class.java).apply {
+                putExtra("sender", "albumDetails")
+                putExtra("position", position)
+                putParcelableArrayListExtra("albumFiles", albumFiles)
+            }
+            // Set the source for the mini player
+            NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "album"
+            mContext.startActivity(intent)
+        }
+
+        holder.menuMore.setOnClickListener {
+            val popupMenu = PopupMenu(mContext, it)
+            popupMenu.menuInflater.inflate(R.menu.popup, popupMenu.menu)
+            popupMenu.show()
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.playlist -> {
+                        showPlaylistSelectionDialog(position)
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }
+    }
+
+    inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val albumImage: ImageView = itemView.findViewById(R.id.music_img)
+        val albumName: TextView = itemView.findViewById(R.id.music_file_name)
+        val menuMore:ImageView=itemView.findViewById(R.id.menuMore)
+    }
+
+    private fun getAlbumArt(uri: String?): ByteArray? {
+        if (uri.isNullOrEmpty()) {
+            return null
+        }
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            retriever.release()
+        }
+    }
+
+    private fun showPlaylistSelectionDialog(position: Int) {
+        val bottomSheetDialog = BottomSheetDialog(mContext)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.playlist_bottom_sheet, null)
+        bottomSheetDialog.setContentView(view)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.playlist_selection_recycler)
+        recyclerView.layoutManager = LinearLayoutManager(mContext)
+
+        val playlistRepository = PlaylistRepository()
+        val playlistSongsRepository = PlaylistSongsRepository()
+
+        lifecycleScope.launch {
+            try {
+                val playlists = playlistRepository.getAllPlaylists()
+                Log.d("Playlist","Playlists:${playlists}")
+
+                val adapter = PlaylistSelectionAdapter(playlists, { selectedPlaylist ->
+                    lifecycleScope.launch {
+                        try {
+                            val song = albumFiles[position]
+                            val success = playlistSongsRepository.addSongToPlaylist(
+                                selectedPlaylist.id,
+                                song.path ?: "",
+
+                                )
+
+                            withContext(Dispatchers.Main) {
+                                if (success) {
+                                    Toast.makeText(mContext, "Added to playlist: ${selectedPlaylist.name}", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(mContext, "Failed to add to playlist", Toast.LENGTH_SHORT).show()
+                                }
+                                bottomSheetDialog.dismiss()
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(mContext, "Error adding song to playlist: ${e.message}", Toast.LENGTH_SHORT).show()
+                                bottomSheetDialog.dismiss()
+                            }
+                        }
+                    }
+                },hideMenu = true)
+
+                withContext(Dispatchers.Main) {
+                    recyclerView.adapter = adapter
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(mContext, "Error loading playlists: ${e.message}", Toast.LENGTH_LONG).show()
+                    bottomSheetDialog.dismiss()
+                }
+            }
+        }
+
+        bottomSheetDialog.show()
+    }
+
+
+}
+----
+java\com\example\musicplayerapp\ui\theme\AlbumDetailsActivity.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.media.MediaMetadataRetriever
+import android.os.Bundle
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+import com.example.musicplayerapp.ui.theme.MainActivity.Companion.musicFiles
+
+class AlbumDetailsActivity : AppCompatActivity() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var albumPhoto: ImageView
+    private lateinit var albumName: String
+    private var albumSongs: ArrayList<MusicFiles> = ArrayList()
+    private var albumDetailsAdapter: AlbumDetailsAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_album_details)
+
+        recyclerView = findViewById(R.id.recyclerView)
+        albumPhoto = findViewById(R.id.albumPhoto)
+        albumName = intent.getStringExtra("albumName") ?: ""
+
+        for (i in musicFiles.indices) {
+            if (albumName == musicFiles[i].album) {
+                albumSongs.add(musicFiles[i])
+            }
+        }
+
+        val image = albumSongs[0].path?.let { getAlbumArt(it) }
+        if (image != null) {
+            Glide.with(this)
+                .load(image)
+                .into(albumPhoto)
+        } else {
+            Glide.with(this)
+                .load(R.drawable.bewedoc)
+                .into(albumPhoto)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (albumSongs.isNotEmpty()) {
+            albumDetailsAdapter = AlbumDetailsAdapter(this, albumSongs,lifecycleScope)
+            recyclerView.adapter = albumDetailsAdapter
+            recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        }
+    }
+
+    private fun getAlbumArt(uri: String): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            retriever.release()
+        }
+    }
+}
+
+----
+java\com\example\musicplayerapp\ui\theme\AlbumAdapter.kt
+package com.example.musicplayerapp.ui.theme
+
+import MusicFiles
+import android.content.Context
+import android.content.Intent
+import android.media.MediaMetadataRetriever
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.musicplayerapp.R
+
+class AlbumAdapter (private val mContext: Context, private val albumFiles: ArrayList<MusicFiles>) : RecyclerView.Adapter<AlbumAdapter.MyHolder>(){
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyHolder {
+        val view = LayoutInflater.from(mContext).inflate(R.layout.album_item, parent, false)
+        return MyHolder(view)
+    }
+
+    override fun getItemCount(): Int {
+        return albumFiles.size
+    }
+
+    override fun onBindViewHolder(holder: MyHolder, position: Int) {
+        holder.albumName.text = albumFiles[position].album
+        val image = albumFiles[position].path?.let { getAlbumArt(it) }
+        if (image != null) {
+            Glide.with(mContext).asBitmap().load(image).into(holder.albumImage)
+        } else {
+            Glide.with(mContext).load(R.drawable.error_image).into(holder.albumImage)
+        }
+
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(mContext, AlbumDetailsActivity::class.java)
+            intent.putExtra("albumName", albumFiles[position].album)
+            mContext.startActivity(intent)
+        }
+    }
+
+    inner class MyHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val albumImage: ImageView = itemView.findViewById(R.id.album_image)
+        val albumName: TextView = itemView.findViewById(R.id.album_name)
+    }
+
+    private fun getAlbumArt(uri: String): ByteArray? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(uri)
+            retriever.embeddedPicture
+        } catch (e: Exception) {
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+}
+----
+java\com\example\musicplayerapp\ui\theme\ActionPlaying.kt
+package com.example.musicplayerapp.ui.theme
+
+interface ActionPlaying {
+    fun playPauseBtnClicked()
+    fun prevBtnClicked()
+    fun nextBtnClicked()
+}
+----
+java\com\example\musicplayerapp\ui\theme\database\PlaylistSongsRepository.kt
+package com.example.musicplayerapp.ui.theme.database
+
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.util.Log
+import java.time.LocalDateTime
+
+class PlaylistSongsRepository {
+    private val TAG = "PlaylistSongsRepository"
+
+    suspend fun addSongToPlaylist(playlistId: String, songId: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val songEntryId = UUID.randomUUID().toString()
+            val timestamp = LocalDateTime.now().toString()
+            val query = "INSERT INTO PlaylistSongs (_id, playlist_id, song_id, timestamp) VALUES (?, ?, ?, ?)"
+
+            MySQLDatabase.executeQuery(query, listOf(songEntryId, playlistId, songId, timestamp))
+            Log.d(TAG, "Song added to playlist successfully")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error adding song to playlist: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun getSongsOfPlaylist(playlistId: String): List<PlaylistSong> = withContext(Dispatchers.IO) {
+        try {
+            val query = "SELECT _id, playlist_id, song_id, timestamp FROM PlaylistSongs WHERE playlist_id = ? ORDER BY timestamp DESC"
+            val result = MySQLDatabase.executeQuery(query, listOf(playlistId)) ?: return@withContext emptyList()
+
+            result.rows.map { row ->
+                PlaylistSong(
+                    id = row.getString("_id") ?: "",
+                    playlistId = row.getString("playlist_id") ?: "",
+                    songId = row.getString("song_id") ?: "",
+                    timestamp = row.getString("timestamp") ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching songs for playlist: ${e.message}")
+            emptyList()
+        }
+    }
+
+    suspend fun removeSongFromPlaylist(songId: String, playlistId: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val query = "DELETE FROM PlaylistSongs WHERE song_id = ? AND playlist_id = ?"
+            MySQLDatabase.executeQuery(query, listOf(songId, playlistId))
+            Log.d(TAG, "Song removed from playlist successfully")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error removing song from playlist: ${e.message}")
+            false
+        }
+    }
+}
+
+data class PlaylistSong(
+    val id: String,
+    val playlistId: String,
+    val songId: String,
+    val timestamp: String,
+)
+
+----
+java\com\example\musicplayerapp\ui\theme\database\PlaylistRepository.kt
+package com.example.musicplayerapp.ui.theme.database
+
+import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import android.util.Log
+import java.time.LocalDateTime
+
+
+class PlaylistRepository {
+    private val TAG = "PlaylistRepository"
+
+
+    suspend fun createPlaylist(name: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val playlistId = UUID.randomUUID().toString()
+            val timestamp = LocalDateTime.now().toString()
+            val query = "INSERT INTO PlaylistDatabase (_id, name, timestamp) VALUES (?, ?, ?)"
+
+            MySQLDatabase.executeQuery(query, listOf(playlistId, name, timestamp))
+            Log.d(TAG, "Playlist created successfully")
+            playlistId
+        } catch (e: Exception) {
+            Log.e(TAG, "Error creating playlist: ${e.message}")
+            null
+        }
+    }
+
+    suspend fun getAllPlaylists(): List<Playlist> = withContext(Dispatchers.IO) {
+        try {
+            val isConnected = MySQLDatabase.connect()
+            if (!isConnected) {
+                Log.e(TAG, "Database is not connected")
+                return@withContext emptyList()
+            }
+
+            val query = """
+                SELECT p._id, p.name, p.timestamp,
+                (SELECT COUNT(*) FROM PlaylistSongs ps WHERE ps.playlist_id = p._id) as song_count
+                FROM PlaylistDatabase p
+                ORDER BY p.timestamp DESC
+            """.trimIndent()
+
+            val result = MySQLDatabase.executeQuery(query)
+            Log.d(TAG, "Query result: ${result?.rows?.size}")
+
+            return@withContext result?.rows?.map { row ->
+                val songCount = row.getLong("song_count")?.toInt() ?: 0  // Convert Long to Int safely
+                Playlist(
+                    id = row.getString("_id") ?: "",
+                    name = row.getString("name") ?: "",
+                    timestamp = row.getString("timestamp") ?: "",
+                    songCount = songCount
+                )
+            } ?: emptyList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting playlists: ${e.message}", e)
+            return@withContext emptyList()
+        }
+    }
+
+    suspend fun deletePlaylist(playlistId: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+
+            val deletePlaylistSongsQuery = "DELETE FROM PlaylistSongs WHERE playlist_id = ?"
+            MySQLDatabase.executeQuery(deletePlaylistSongsQuery, listOf(playlistId))
+
+            val deletePlaylistQuery = "DELETE FROM PlaylistDatabase WHERE _id = ?"
+            MySQLDatabase.executeQuery(deletePlaylistQuery, listOf(playlistId))
+
+            Log.d(TAG, "Playlist deleted successfully")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Error deleting playlist: ${e.message}")
+            false
+        }
+    }
+
+}
+
+
+data class Playlist(
+    val id: String,
+    val name: String,
+    val timestamp: String,
+    val songCount: Int = 0  // Added songCount property
+)
+----
+java\com\example\musicplayerapp\ui\theme\database\MySQLConnection.kt
+package com.example.musicplayerapp.ui.theme.database
+
+import android.util.Log
+import com.github.jasync.sql.db.QueryResult
+import com.github.jasync.sql.db.mysql.MySQLConnection
+import com.github.jasync.sql.db.mysql.MySQLConnectionBuilder
+import com.github.jasync.sql.db.pool.ConnectionPool
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+object MySQLDatabase {
+    private var connection: ConnectionPool<MySQLConnection>? = null
+    private const val TAG = "MySQLDatabase"
+
+    suspend fun connect() = withContext(Dispatchers.IO) {
+        try {
+            if (connection == null) {
+                connection = MySQLConnectionBuilder.createConnectionPool(
+                    "jdbc:mysql://${DatabaseConfig.HOST}:${DatabaseConfig.PORT}/${DatabaseConfig.DATABASE}?" +
+                            "user=${DatabaseConfig.USERNAME}&password=${DatabaseConfig.PASSWORD}"
+                )
+
+                // Create tables if they don't exist
+            }
+            Log.d(TAG, "Database connected successfully")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to connect to database: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun disconnect() = withContext(Dispatchers.IO) {
+        try {
+            connection?.disconnect()
+            connection = null
+            Log.d(TAG, "Database disconnected successfully")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error disconnecting from database: ${e.message}")
+        }
+    }
+
+    suspend fun executeQuery(query: String, params: List<Any> = emptyList()): QueryResult? =
+        withContext(Dispatchers.IO) {
+            try {
+                connection?.sendPreparedStatement(query, params)?.get()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error executing query: ${e.message}")
+                null
+            }
+        }
+}
+----
+java\com\example\musicplayerapp\ui\theme\database\DatabaseConfig.kt
+package com.example.musicplayerapp.ui.theme.database
+
+object DatabaseConfig {
+    const val HOST = "sql12.freesqldatabase.com"
+    const val PORT = 3306
+    const val DATABASE = "sql12761965"
+    const val USERNAME = "sql12761965"
+    const val PASSWORD = "ekVrIYFCs3"
+}
+--END--

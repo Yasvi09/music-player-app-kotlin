@@ -1,12 +1,14 @@
 package com.example.musicplayerapp.ui.theme
 
 import MusicFiles
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
@@ -58,7 +60,7 @@ class PlaylistSongsAdapter(
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.remove_playlist -> {
-                        removeSongFromPlaylist(song, position)
+                        showRemoveConfirmationDialog(song, position)
                         true
                     }
                     else -> false
@@ -83,7 +85,32 @@ class PlaylistSongsAdapter(
 
             mContext.startActivity(intent)
         }
+    }
 
+    private fun showRemoveConfirmationDialog(song: MusicFiles, position: Int) {
+        val dialog = Dialog(mContext)
+        dialog.setContentView(R.layout.custom_dialogue)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Set up dialog views
+        val dialogMessage = dialog.findViewById<TextView>(R.id.dialogMessage)
+        val yesButton = dialog.findViewById<Button>(R.id.yesButton)
+        val noButton = dialog.findViewById<Button>(R.id.noButton)
+
+        // Set message
+        dialogMessage.text = "Remove ${song.title} from playlist?"
+
+        // Set click listeners
+        yesButton.setOnClickListener {
+            dialog.dismiss()
+            removeSongFromPlaylist(song, position)
+        }
+
+        noButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun removeSongFromPlaylist(song: MusicFiles, position: Int) {
@@ -92,7 +119,6 @@ class PlaylistSongsAdapter(
                 val success = playlistSongsRepository.removeSongFromPlaylist(song.path ?: "", playlistId)
                 withContext(Dispatchers.Main) {
                     if (success) {
-
                         songs.removeAt(position)
                         PlaylistSongsActivity.currentPlaylistSongs.removeAt(position)
                         notifyItemRemoved(position)

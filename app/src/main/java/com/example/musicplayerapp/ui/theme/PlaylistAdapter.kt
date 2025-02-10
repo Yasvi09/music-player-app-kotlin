@@ -1,17 +1,16 @@
 package com.example.musicplayerapp.ui.theme
 
+import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.musicplayerapp.R
 import com.example.musicplayerapp.ui.theme.database.Playlist
 import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
@@ -35,7 +34,7 @@ class PlaylistAdapter(
         val songCount: TextView = itemView.findViewById(R.id.song_count)
         val musicImg: ImageView = itemView.findViewById(R.id.music_img)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
-        val playlistInitial:TextView=itemView.findViewById(R.id.playlist_initial)
+        val playlistInitial: TextView = itemView.findViewById(R.id.playlist_initial)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
@@ -50,8 +49,8 @@ class PlaylistAdapter(
         val songCountText = "Songs: ${playlist.songCount}"
         holder.songCount.text = songCountText
 
-        val firstletter=playlist.name.firstOrNull()?.toString()?.uppercase()?: "?"
-        holder.playlistInitial.text=firstletter
+        val firstletter = playlist.name.firstOrNull()?.toString()?.uppercase() ?: "?"
+        holder.playlistInitial.text = firstletter
 
         holder.itemView.setOnClickListener {
             onPlaylistClickListener?.invoke(playlist)
@@ -69,7 +68,7 @@ class PlaylistAdapter(
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.delete_playlist -> {
-                    deletePlaylist(playlist, context)
+                    showDeleteConfirmationDialog(playlist, context)
                     true
                 }
                 else -> false
@@ -77,6 +76,37 @@ class PlaylistAdapter(
         }
 
         popupMenu.show()
+    }
+
+    private fun showDeleteConfirmationDialog(playlist: Playlist, context: Context) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.custom_dialogue)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Set up dialog views
+        val dialogMessage = dialog.findViewById<TextView>(R.id.dialogMessage)
+        val yesButton = dialog.findViewById<Button>(R.id.yesButton)
+        val noButton = dialog.findViewById<Button>(R.id.noButton)
+
+        // Set message
+        val message = if (playlist.songCount > 0) {
+            "Delete playlist '${playlist.name}' and remove ${playlist.songCount} songs?"
+        } else {
+            "Delete playlist '${playlist.name}'?"
+        }
+        dialogMessage.text = message
+
+        // Set click listeners
+        yesButton.setOnClickListener {
+            dialog.dismiss()
+            deletePlaylist(playlist, context)
+        }
+
+        noButton.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun deletePlaylist(playlist: Playlist, context: Context) {

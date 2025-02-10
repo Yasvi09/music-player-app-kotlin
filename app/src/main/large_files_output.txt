@@ -1,0 +1,16 @@
+AndroidManifest.xml
+res\layout\fragment_now_playing_bottom.xml
+res\layout\activity_player.xml
+res\drawable\ic_launcher_background.xml
+java\com\example\musicplayerapp\ui\theme\PlaylistSongsAdapter.kt
+java\com\example\musicplayerapp\ui\theme\PlaylistSongsActivity.kt
+java\com\example\musicplayerapp\ui\theme\PlaylistFragment.kt
+java\com\example\musicplayerapp\ui\theme\PlaylistAdapter.kt
+java\com\example\musicplayerapp\ui\theme\PlayerActivity.kt
+java\com\example\musicplayerapp\ui\theme\NowPlayingFragmentBottom.kt
+java\com\example\musicplayerapp\ui\theme\MusicService.kt
+java\com\example\musicplayerapp\ui\theme\MusicAdapter.kt
+java\com\example\musicplayerapp\ui\theme\MainActivity.kt
+java\com\example\musicplayerapp\ui\theme\AlbumDetailsAdapter.kt
+java\com\example\musicplayerapp\ui\theme\database\PlaylistSongsRepository.kt
+java\com\example\musicplayerapp\ui\theme\database\PlaylistRepository.kt
