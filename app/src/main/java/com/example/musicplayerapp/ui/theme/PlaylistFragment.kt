@@ -2,8 +2,6 @@ package com.example.musicplayerapp.ui.theme
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayerapp.R
-import com.example.musicplayerapp.ui.theme.database.MySQLDatabase
 import com.example.musicplayerapp.ui.theme.database.Playlist
 import com.example.musicplayerapp.ui.theme.database.PlaylistRepository
 import com.example.musicplayerapp.ui.theme.database.PlaylistSongsRepository
@@ -44,6 +41,7 @@ class PlaylistFragment : Fragment() {
         playlistSongsRepository = PlaylistSongsRepository()
         playlistRecyclerView.layoutManager = LinearLayoutManager(context)
 
+
         addPlaylistBtn.setOnClickListener {
             showCreatePlaylistDialog()
         }
@@ -56,18 +54,7 @@ class PlaylistFragment : Fragment() {
         loadPlaylists()
     }
 
-        private fun createPlaylistAdapter(allPlaylists: List<Playlist>) {
-            val adapter = PlaylistAdapter(allPlaylists) {
-                // Playlist delete callback
-                loadPlaylists()
-            }
-            adapter.setOnPlaylistClickListener { playlist ->
-                val intent = Intent(context, PlaylistSongsActivity::class.java)
-                intent.putExtra("playlistId", playlist.id)
-                startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
-            }
-            playlistRecyclerView.adapter = adapter
-        }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -80,6 +67,7 @@ class PlaylistFragment : Fragment() {
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val bottomSheetView = layoutInflater.inflate(R.layout.bottom_sheet, null)
         bottomSheetDialog.setContentView(bottomSheetView)
+
 
         val etPlaylistName = bottomSheetView.findViewById<EditText>(R.id.et_playlist_name)
         val btnCreate = bottomSheetView.findViewById<Button>(R.id.btn_create)
@@ -159,7 +147,7 @@ class PlaylistFragment : Fragment() {
                     startActivityForResult(intent, PlaylistSongsActivity.RESULT_PLAYLIST_MODIFIED)
                 } else {
 
-                    Toast.makeText(requireContext(), "Playlist is empty", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Playlist is empty please add song", Toast.LENGTH_SHORT).show()
                 }
             }
         }

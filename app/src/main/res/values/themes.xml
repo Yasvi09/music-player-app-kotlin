@@ -6,5 +6,16 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">false</item>
         <item name="coordinatorLayoutStyle">@style/Widget.Support.CoordinatorLayout</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogueTheme</item>
     </style>
+
+    <style name="AppBottomSheetDialogueTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModelStyle</item>
+    </style>
+
+    <style name="AppModelStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/playlist_bg</item> <!-- Match with your screen background -->
+    </style>
+
 </resources>

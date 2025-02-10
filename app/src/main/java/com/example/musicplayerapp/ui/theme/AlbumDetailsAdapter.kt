@@ -109,7 +109,7 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
                 val playlists = playlistRepository.getAllPlaylists()
                 Log.d("Playlist","Playlists:${playlists}")
 
-                val adapter = PlaylistSelectionAdapter(playlists) { selectedPlaylist ->
+                val adapter = PlaylistSelectionAdapter(playlists, { selectedPlaylist ->
                     lifecycleScope.launch {
                         try {
                             val song = albumFiles[position]
@@ -134,7 +134,7 @@ class AlbumDetailsAdapter(private val mContext: Context, private val albumFiles:
                             }
                         }
                     }
-                }
+                },hideMenu = true)
 
                 withContext(Dispatchers.Main) {
                     recyclerView.adapter = adapter

@@ -79,7 +79,7 @@ class PlaylistSongsActivity : AppCompatActivity() {
 
                     playlistMusicFiles.clear()
                     for (playlistSong in playlistSongs) {
-                        // Find the corresponding MusicFile from MainActivity's musicFiles
+
                         MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
                             playlistMusicFiles.add(it)
                         }
@@ -88,25 +88,16 @@ class PlaylistSongsActivity : AppCompatActivity() {
                     if (playlistMusicFiles.isEmpty()) {
                         onPlaylistEmpty()
                     } else {
-                        // Update the static currentPlaylistSongs
+
                         currentPlaylistSongs = ArrayList(playlistMusicFiles)
 
-                        playlistSongsAdapter = PlaylistSongsAdapter(
-                            this@PlaylistSongsActivity,
-                            playlistMusicFiles,
-                            playlistId,
-                            lifecycleScope
-                        )
+                        playlistSongsAdapter = PlaylistSongsAdapter(this@PlaylistSongsActivity, playlistMusicFiles, playlistId, lifecycleScope)
                         recyclerView.adapter = playlistSongsAdapter
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@PlaylistSongsActivity,
-                        "Failed to load songs: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this@PlaylistSongsActivity, "Failed to load songs: ${e.message}", Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
