@@ -36,7 +36,7 @@ import com.example.musicplayerapp.ui.theme.MainActivity.Companion.musicFiles
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 
-class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
+class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection, MusicServiceCallback  {
 
     var song_name: TextView? = null
     var artist_name: TextView? = null
@@ -246,8 +246,6 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
 
     override fun playPauseBtnClicked() {
         if (musicService!!.isPlaying()) {
-            playPauseBtn.setImageResource(R.drawable.ic_play)
-            showNotification(R.drawable.ic_play)
             musicService!!.pause()
             seekBar.max = musicService!!.getDuration() / 1000
             runOnUiThread(object : Runnable {
@@ -259,10 +257,7 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
                     handler.postDelayed(this, 1000)
                 }
             })
-
         } else {
-            showNotification(R.drawable.ic_pause)
-            playPauseBtn.setImageResource(R.drawable.ic_pause)
             musicService!!.start()
             seekBar.max = musicService!!.getDuration() / 1000
             runOnUiThread(object : Runnable {
@@ -274,10 +269,8 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
                     handler.postDelayed(this, 1000)
                 }
             })
-
         }
     }
-
     private fun formattedTime(mCurrentPosition: Int): String {
         var totalOut = ""
         var totalNew = ""
@@ -370,25 +363,9 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         }
     }
 
-    override fun onServiceConnected(name: ComponentName, service: IBinder) {
-        val myBinder = service as MusicService.MyBinder
-        musicService = myBinder.getService()
-        musicService!!.setCallBack(this)
-       //  Toast.makeText(this, "Connected $musicService", Toast.LENGTH_SHORT).show()
 
-        musicService?.let {
-            seekBar.max = it.getDuration() / 1000
-        }
 
-        uri?.let { metaData(it) }
-        song_name!!.text = listSongs[position].title
-        artist_name!!.text = listSongs[position].artist
-        musicService!!.onCompleted()
-    }
 
-    override fun onServiceDisconnected(name: ComponentName) {
-        musicService = null
-    }
 
     fun showNotification(playPauseBtn: Int) {
         val intent = Intent(this, PlayerActivity::class.java)
@@ -439,6 +416,47 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection {
         val retriever = MediaMetadataRetriever()
         retriever.setDataSource(uri)
         return retriever.embeddedPicture
+    }
+
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        val myBinder = service as MusicService.MyBinder
+        musicService = myBinder.getService()
+        musicService?.setCallBack(this)
+        musicService?.addCallback(this)  // Add this activity as a callback
+
+        musicService?.let {
+            seekBar.max = it.getDuration() / 1000
+            updatePlayPauseButton()
+        }
+
+        uri?.let { metaData(it) }
+        song_name!!.text = listSongs[position].title
+        artist_name!!.text = listSongs[position].artist
+        musicService!!.onCompleted()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        musicService?.removeCallback(this)  // Remove callback when disconnected
+        musicService = null
+    }
+
+    override fun onPlaybackStateChanged(isPlaying: Boolean) {
+        runOnUiThread {
+            updatePlayPauseButton()
+        }
+    }
+
+    private fun updatePlayPauseButton() {
+        val isPlaying = musicService?.isPlaying() == true
+        playPauseBtn.setImageResource(
+            if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+        )
+        showNotification(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        musicService?.removeCallback(this)
     }
 
 }

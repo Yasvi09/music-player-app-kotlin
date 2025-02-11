@@ -24,7 +24,7 @@ import com.example.musicplayerapp.ui.theme.MainActivity.Companion.SONG_NAME_TO_F
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.IOException
 
-class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
+class NowPlayingFragmentBottom : Fragment(), ServiceConnection, MusicServiceCallback  {
 
     private lateinit var nextBtn: ImageView
     private lateinit var albumArt: ImageView
@@ -65,12 +65,13 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
         }
 
         playPauseBtn.setOnClickListener {
+            println("Play/Pause button clicked")
             if (musicService != null && isServiceBound) {
-                musicService!!.playPauseBtnClicked()
-                if (musicService!!.isPlaying()) {
-                    playPauseBtn.setImageResource(R.drawable.ic_pause)
-                } else {
-                    playPauseBtn.setImageResource(R.drawable.ic_play)
+                try {
+                    musicService!!.playPauseBtnClicked()
+                    // The UI will be updated through the callback mechanism
+                } catch (e: Exception) {
+                    Toast.makeText(context, "Error controlling playback: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(context, "Music service not ready", Toast.LENGTH_SHORT).show()
@@ -105,6 +106,44 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
         }
 
         return view
+    }
+
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
+        val binder = service as MusicService.MyBinder
+        musicService = binder.getService()
+        musicService?.addCallback(this)
+        isServiceBound = true
+
+        updatePlayPauseButton()
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        musicService?.removeCallback(this)
+        musicService = null
+        isServiceBound = false
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        musicService?.removeCallback(this)
+    }
+
+    override fun onPlaybackStateChanged(isPlaying: Boolean) {
+        activity?.runOnUiThread {
+            updatePlayPauseButton()
+        }
+    }
+
+    fun updatePlayPauseButton() {
+        if (musicService?.mediaPlayer != null) {
+            val isPlaying = musicService!!.isPlaying()
+            playPauseBtn.setImageResource(
+                if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+            )
+
+            // Notify PlaylistSongsActivity about the state change
+            (activity as? PlaylistSongsActivity)?.onMiniPlayerStateChanged()
+        }
     }
 
     private fun updateUI() {
@@ -195,30 +234,6 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }
-        }
-    }
-
-    override fun onServiceConnected(name: ComponentName, service: IBinder) {
-        val binder = service as MusicService.MyBinder
-        musicService = binder.getService()
-        isServiceBound = true
-
-        // Update play/pause button state when service connects
-        musicService?.let {
-            updatePlayPauseButton()
-        }
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        musicService = null
-        isServiceBound = false
-    }
-
-    private fun updatePlayPauseButton() {
-        if (musicService?.mediaPlayer != null) {
-            playPauseBtn.setImageResource(
-                if (musicService!!.isPlaying()) R.drawable.ic_pause else R.drawable.ic_play
-            )
         }
     }
 

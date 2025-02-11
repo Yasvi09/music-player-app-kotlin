@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Collections
 
-class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
+class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection, MusicServiceCallback {
 
     companion object {
         var currentPlaylistSongs = ArrayList<MusicFiles>()
@@ -91,15 +91,15 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
                     if (musicService != null &&
                         musicService?.mediaPlayer != null &&
                         PlayerActivity.listSongs == ArrayList(playlistMusicFiles)) {
-
                         musicService?.start()
                         playAllBtn.setImageResource(R.drawable.ic_pause)
                         isPlaying = true
                     } else {
-
                         startPlaylist()
                     }
                 }
+                // Update mini player
+                miniPlayer?.updatePlayPauseButton()
             } else {
                 Toast.makeText(this, "No songs in playlist", Toast.LENGTH_SHORT).show()
             }
@@ -209,21 +209,14 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
         unbindService(this)
     }
 
-    private fun updatePlayButtonState() {
-        if (musicService?.isPlaying() == true &&
-            PlayerActivity.listSongs == ArrayList(playlistMusicFiles)) {
-            playAllBtn.setImageResource(R.drawable.ic_pause)
-            isPlaying = true
-        } else {
-            playAllBtn.setImageResource(R.drawable.ic_play)
-            isPlaying = false
-        }
+
+    // Add this method to handle updates from mini player
+    fun onMiniPlayerStateChanged() {
+        updatePlayButtonState()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        currentPlaylistSongs.clear()
-    }
+
+
 
     override fun finish() {
         if (isPlaylistModified) {
@@ -272,13 +265,39 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
         }
     }
 
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+    override fun onServiceConnected(name: ComponentName, service: IBinder) {
         val binder = service as MusicService.MyBinder
         musicService = binder.getService()
+        musicService?.addCallback(this)
+
+        // Update play button state when service connects
         updatePlayButtonState()
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
+        musicService?.removeCallback(this)
         musicService = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        musicService?.removeCallback(this)
+    }
+
+    override fun onPlaybackStateChanged(isPlaying: Boolean) {
+        runOnUiThread {
+            updatePlayButtonState()
+        }
+    }
+
+    private fun updatePlayButtonState() {
+        if (musicService?.isPlaying() == true &&
+            PlayerActivity.listSongs == ArrayList(playlistMusicFiles)) {
+            playAllBtn.setImageResource(R.drawable.ic_pause)
+            isPlaying = true
+        } else {
+            playAllBtn.setImageResource(R.drawable.ic_play)
+            isPlaying = false
+        }
     }
 }
