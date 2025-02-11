@@ -15,7 +15,7 @@
     </style>
 
     <style name="AppModelStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/playlist_bg</item> <!-- Match with your screen background -->
+        <item name="android:background">@drawable/playlist_bg</item>
     </style>
 
 </resources>

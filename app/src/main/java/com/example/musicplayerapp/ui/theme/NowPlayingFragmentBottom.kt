@@ -1,6 +1,5 @@
 package com.example.musicplayerapp.ui.theme
 
-import MusicFiles
 import android.content.ComponentName
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
@@ -42,15 +41,13 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection {
         const val ARTIST_NAME = "ARTIST NAME"
         const val SONG_NAME = "SONG NAME"
         var CURRENT_SONG_SOURCE = "mainList"
+
     }
 
     private var isServiceBound = false
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         view = inflater.inflate(R.layout.fragment_now_playing_bottom, container, false)
         artist = view.findViewById(R.id.song_artist_miniPlayer)
         songName = view.findViewById(R.id.song_name_miniPlayer)

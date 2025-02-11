@@ -45,6 +45,8 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
     private lateinit var backBtn: ImageView
     private lateinit var playAllBtn: FloatingActionButton
     private lateinit var playlistNameText: TextView
+    private var miniPlayer: NowPlayingFragmentBottom? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +63,10 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
         loadPlaylistDetails()
         setupRecyclerView()
         loadSongs()
+
+        miniPlayer = supportFragmentManager.findFragmentById(R.id.frag_bottom_player) as? NowPlayingFragmentBottom
+
+
     }
 
     private fun initializeViews() {
@@ -78,7 +84,6 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
         playAllBtn.setOnClickListener {
             if (playlistMusicFiles.isNotEmpty()) {
                 if (isPlaying) {
-                    // Pause the music
                     musicService?.pause()
                     playAllBtn.setImageResource(R.drawable.ic_play)
                     isPlaying = false
@@ -86,12 +91,12 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
                     if (musicService != null &&
                         musicService?.mediaPlayer != null &&
                         PlayerActivity.listSongs == ArrayList(playlistMusicFiles)) {
-                        // Resume playing
+
                         musicService?.start()
                         playAllBtn.setImageResource(R.drawable.ic_pause)
                         isPlaying = true
                     } else {
-                        // Start playing from beginning
+
                         startPlaylist()
                     }
                 }
@@ -145,31 +150,21 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection {
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Add ItemTouchHelper for drag and drop
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN, // Enable drag and drop vertically
-            0 // Disable swipe
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                source: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+            override fun onMove(recyclerView: RecyclerView, source: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 val fromPosition = source.adapterPosition
                 val toPosition = target.adapterPosition
 
-                // Update both lists to maintain consistency
                 Collections.swap(playlistMusicFiles, fromPosition, toPosition)
                 Collections.swap(currentPlaylistSongs, fromPosition, toPosition)
 
-                // Notify adapter of move
                 playlistSongsAdapter.notifyItemMoved(fromPosition, toPosition)
 
                 return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // Not used
+
             }
 
             override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {

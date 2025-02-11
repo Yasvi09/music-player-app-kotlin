@@ -25,12 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class PlaylistSongsAdapter(
-    private val mContext: Context,
-    private val songs: MutableList<MusicFiles>,
-    private val playlistId: String,
-    private val lifecycleScope: LifecycleCoroutineScope
-) : RecyclerView.Adapter<PlaylistSongsAdapter.ViewHolder>() {
+class PlaylistSongsAdapter(private val mContext: Context, private val songs: MutableList<MusicFiles>, private val playlistId: String, private val lifecycleScope: LifecycleCoroutineScope) : RecyclerView.Adapter<PlaylistSongsAdapter.ViewHolder>() {
 
     private val playlistSongsRepository = PlaylistSongsRepository()
 
@@ -39,10 +34,10 @@ class PlaylistSongsAdapter(
         val musicFileName: TextView = itemView.findViewById(R.id.music_file_name)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
 
-        // Add a drag handle or make the whole item draggable
+
         init {
             itemView.setOnLongClickListener {
-                // Optional: Provide haptic feedback
+
                 val vibrator = mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -64,7 +59,8 @@ class PlaylistSongsAdapter(
         val song = songs[position]
         holder.musicFileName.text = song.title
 
-        // Load album art
+        holder.menuMore.setImageResource(R.drawable.ic_remove)
+
         val image = getAlbumArt(song.path)
         if (image != null) {
             Glide.with(mContext).asBitmap().load(image).into(holder.musicImg)
@@ -110,15 +106,12 @@ class PlaylistSongsAdapter(
         dialog.setContentView(R.layout.custom_dialogue)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Set up dialog views
         val dialogMessage = dialog.findViewById<TextView>(R.id.dialogMessage)
         val yesButton = dialog.findViewById<Button>(R.id.yesButton)
         val noButton = dialog.findViewById<Button>(R.id.noButton)
 
-        // Set message
         dialogMessage.text = "Remove ${song.title} from playlist?"
 
-        // Set click listeners
         yesButton.setOnClickListener {
             dialog.dismiss()
             removeSongFromPlaylist(song, position)

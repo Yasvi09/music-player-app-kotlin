@@ -18,10 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PlaylistAdapter(
-    private val playlists: List<Playlist>,
-    private val onPlaylistDeleted: () -> Unit
-) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlaylistDeleted: () -> Unit) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
     private var onPlaylistClickListener: ((Playlist) -> Unit)? = null
 
@@ -32,7 +29,6 @@ class PlaylistAdapter(
     inner class PlaylistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val playlistName: TextView = itemView.findViewById(R.id.playlist_name)
         val songCount: TextView = itemView.findViewById(R.id.song_count)
-        val musicImg: ImageView = itemView.findViewById(R.id.music_img)
         val menuMore: ImageView = itemView.findViewById(R.id.menuMore)
         val playlistInitial: TextView = itemView.findViewById(R.id.playlist_initial)
     }
@@ -51,6 +47,8 @@ class PlaylistAdapter(
 
         val firstletter = playlist.name.firstOrNull()?.toString()?.uppercase() ?: "?"
         holder.playlistInitial.text = firstletter
+
+        holder.menuMore.setImageResource(R.drawable.ic_remove)
 
         holder.itemView.setOnClickListener {
             onPlaylistClickListener?.invoke(playlist)
@@ -83,7 +81,6 @@ class PlaylistAdapter(
         dialog.setContentView(R.layout.custom_dialogue)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Set up dialog views
         val dialogMessage = dialog.findViewById<TextView>(R.id.dialogMessage)
         val yesButton = dialog.findViewById<Button>(R.id.yesButton)
         val noButton = dialog.findViewById<Button>(R.id.noButton)
@@ -96,7 +93,6 @@ class PlaylistAdapter(
         }
         dialogMessage.text = message
 
-        // Set click listeners
         yesButton.setOnClickListener {
             dialog.dismiss()
             deletePlaylist(playlist, context)
