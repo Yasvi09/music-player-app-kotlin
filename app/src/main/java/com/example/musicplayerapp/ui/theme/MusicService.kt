@@ -99,9 +99,6 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
     private var isHandlingStateChange = false
     private lateinit var mediaSessionCompat: MediaSessionCompat
 
-
-
-
     override fun onCreate() {
         super.onCreate()
         mediaSessionCompat = MediaSessionCompat(baseContext, "My Audio").apply {
@@ -147,7 +144,6 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
         return START_STICKY
     }
 
-
     private fun playMedia(startPosition: Int) {
         musicFiles = PlayerActivity.listSongs!!
         position = startPosition
@@ -165,8 +161,6 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
         }
     }
 
-
-
     private fun updatePlaybackState(playing: Boolean) {
         // Update UI elements
         actionPlaying?.playPauseBtnClicked()
@@ -177,8 +171,6 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
             showNotification(icon)
         }
     }
-
-
 
     private fun showNotification(playPauseBtn: Int) {
         try {
@@ -336,18 +328,21 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
 
     override fun onCompletion(mp: MediaPlayer?) {
         try {
-            isHandlingStateChange = true
-            actionPlaying?.nextBtnClicked()
-
-            if (mediaPlayer != null) {
-                createMediaPlayer(position)
-                mediaPlayer?.start()
-                updatePlaybackState(true)
+            if (position < musicFiles.size - 1) {
+                position++ // Move to next song
+            } else {
+                position = 0 // Loop back to first song
             }
-        } finally {
-            isHandlingStateChange = false
+
+            mediaPlayer?.reset() // Reset current media player
+            createMediaPlayer(position) // Create new media player instance
+            mediaPlayer?.start() // Start playing next song
+            notifyPlaybackStateChanged(true) // Notify UI to update playback state
+        } catch (e: Exception) {
+            Log.e("MusicService", "Error in onCompletion", e)
         }
     }
+
 
     fun setCallBack(actionPlaying: ActionPlaying) {
         this.actionPlaying = actionPlaying

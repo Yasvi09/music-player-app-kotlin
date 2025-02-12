@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Collections
 
-class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection, MusicServiceCallback {
+    class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection, MusicServiceCallback {
 
     companion object {
         var currentPlaylistSongs = ArrayList<MusicFiles>()
@@ -65,7 +65,6 @@ class PlaylistSongsActivity : AppCompatActivity(), ServiceConnection, MusicServi
         loadSongs()
 
         miniPlayer = supportFragmentManager.findFragmentById(R.id.frag_bottom_player) as? NowPlayingFragmentBottom
-
 
     }
 
