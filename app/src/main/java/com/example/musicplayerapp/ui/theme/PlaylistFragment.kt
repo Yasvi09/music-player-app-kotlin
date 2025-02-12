@@ -119,7 +119,10 @@ class PlaylistFragment : Fragment() {
                         noPlaylistTextView?.visibility = View.GONE
                     }
 
-                    val adapter = PlaylistAdapter(allPlaylists) {
+                    val adapter = PlaylistAdapter(
+                        requireContext(),  // Pass the context here
+                        allPlaylists
+                    ) {
                         loadPlaylists()
                     }
 

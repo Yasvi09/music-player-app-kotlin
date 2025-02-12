@@ -24,7 +24,7 @@ import com.example.musicplayerapp.ui.theme.MainActivity.Companion.SONG_NAME_TO_F
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.IOException
 
-class NowPlayingFragmentBottom : Fragment(), ServiceConnection, MusicServiceCallback  {
+class NowPlayingFragmentBottom : Fragment(), ServiceConnection, MusicServiceCallback, MusicService.OnSongChangedListener  {
 
     private lateinit var nextBtn: ImageView
     private lateinit var albumArt: ImageView
@@ -112,13 +112,16 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection, MusicServiceCall
         val binder = service as MusicService.MyBinder
         musicService = binder.getService()
         musicService?.addCallback(this)
+        musicService?.addSongChangedListener(this) // Add this fragment as a song change listener
         isServiceBound = true
 
         updatePlayPauseButton()
+        updateBottomPlayerUI() // Update UI when service connects
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
         musicService?.removeCallback(this)
+        musicService?.removeSongChangedListener(this) // Remove listener when disconnected
         musicService = null
         isServiceBound = false
     }
@@ -126,6 +129,40 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection, MusicServiceCall
     override fun onDestroyView() {
         super.onDestroyView()
         musicService?.removeCallback(this)
+        musicService?.removeSongChangedListener(this) // Remove listener when view is destroyed
+    }
+
+    // Implement the OnSongChangedListener interface
+    override fun onSongChanged() {
+        activity?.runOnUiThread {
+            updateBottomPlayerUI()
+        }
+    }
+
+    private fun updateBottomPlayerUI() {
+        if (context == null) return
+
+        // Get updated values from MainActivity companion object
+        val currentPath = MainActivity.PATH_TO_FRAG
+        val currentArtist = MainActivity.ARTIST_TO_FRAG
+        val currentSongName = MainActivity.SONG_NAME_TO_FRAG
+
+        if (MainActivity.SHOW_MINI_PLAYER && currentPath != null) {
+            val art = getAlbumArt(currentPath)
+            if (art != null) {
+                Glide.with(requireContext())
+                    .load(art)
+                    .into(albumArt)
+            } else {
+                Glide.with(requireContext())
+                    .load(R.drawable.bewedoc)
+                    .into(albumArt)
+            }
+
+            songName.text = currentSongName
+            artist.text = currentArtist
+            updatePlayPauseButton()
+        }
     }
 
     override fun onPlaybackStateChanged(isPlaying: Boolean) {
@@ -179,23 +216,6 @@ class NowPlayingFragmentBottom : Fragment(), ServiceConnection, MusicServiceCall
                 updateBottomPlayerUI()
             }
         }
-    }
-
-    private fun updateBottomPlayerUI() {
-        if (context == null) return
-
-        val art = PATH_TO_FRAG?.let { getAlbumArt(it) }
-        if (art != null) {
-            Glide.with(requireContext()).load(art)
-                .into(albumArt)
-        } else {
-            Glide.with(requireContext()).load(R.drawable.bewedoc)
-                .into(albumArt)
-        }
-        songName.text = SONG_NAME_TO_FRAG
-        artist.text = ARTIST_TO_FRAG
-
-        updatePlayPauseButton()
     }
 
     override fun onResume() {

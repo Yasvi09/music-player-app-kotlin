@@ -28,6 +28,8 @@ import kotlinx.coroutines.withContext
 class PlaylistSongsAdapter(private val mContext: Context, private val songs: MutableList<MusicFiles>, private val playlistId: String, private val lifecycleScope: LifecycleCoroutineScope) : RecyclerView.Adapter<PlaylistSongsAdapter.ViewHolder>() {
 
     private val playlistSongsRepository = PlaylistSongsRepository()
+    private lateinit var preferencesManager: PlaylistPreferencesManager
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val musicImg: ImageView = itemView.findViewById(R.id.music_img)
@@ -37,7 +39,7 @@ class PlaylistSongsAdapter(private val mContext: Context, private val songs: Mut
 
         init {
             itemView.setOnLongClickListener {
-
+                preferencesManager = PlaylistPreferencesManager(mContext)
                 val vibrator = mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -54,6 +56,8 @@ class PlaylistSongsAdapter(private val mContext: Context, private val songs: Mut
         val view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false)
         return ViewHolder(view)
     }
+
+    // In PlaylistSongsAdapter.kt, update the onBindViewHolder method
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val song = songs[position]
@@ -84,19 +88,28 @@ class PlaylistSongsAdapter(private val mContext: Context, private val songs: Mut
         }
 
         holder.itemView.setOnClickListener {
+            // First, ensure PlayerActivity's list is updated with current order
+            PlayerActivity.listSongs = ArrayList(songs)
+
+            // Find the actual position of this song in the main music files list
+            val currentSong = songs[position]
             val intent = Intent(mContext, PlayerActivity::class.java).apply {
                 putExtra("position", position)
                 putExtra("sender", "playlistSongs")
-                PlayerActivity.listSongs = ArrayList(songs)
             }
 
+            // Update the current playlist songs with current order
+            PlaylistSongsActivity.currentPlaylistSongs = ArrayList(songs)
+
             MainActivity.SHOW_MINI_PLAYER = true
-            MainActivity.PATH_TO_FRAG = song.path
-            MainActivity.ARTIST_TO_FRAG = song.artist
-            MainActivity.SONG_NAME_TO_FRAG = song.title
+            MainActivity.PATH_TO_FRAG = currentSong.path
+            MainActivity.ARTIST_TO_FRAG = currentSong.artist
+            MainActivity.SONG_NAME_TO_FRAG = currentSong.title
+
             // Set the source for the mini player
             NowPlayingFragmentBottom.CURRENT_SONG_SOURCE = "playlist"
 
+            // Start the PlayerActivity
             mContext.startActivity(intent)
         }
     }
@@ -130,6 +143,11 @@ class PlaylistSongsAdapter(private val mContext: Context, private val songs: Mut
                 val success = playlistSongsRepository.removeSongFromPlaylist(song.path ?: "", playlistId)
                 withContext(Dispatchers.Main) {
                     if (success) {
+                        // Remove song from SharedPreferences order
+                        song.path?.let {
+                            preferencesManager.removeSongFromOrder(playlistId, it)
+                        }
+
                         songs.removeAt(position)
                         PlaylistSongsActivity.currentPlaylistSongs.removeAt(position)
                         notifyItemRemoved(position)

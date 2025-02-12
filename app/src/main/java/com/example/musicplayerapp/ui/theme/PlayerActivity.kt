@@ -293,7 +293,7 @@ class PlayerActivity : AppCompatActivity() ,  ActionPlaying, ServiceConnection, 
         // Update how we get the songs list based on the sender
         listSongs = when (sender) {
             "albumDetails" -> intent.getParcelableArrayListExtra<MusicFiles>("albumFiles") ?: arrayListOf()
-            "playlistSongs" -> ArrayList(PlaylistSongsActivity.currentPlaylistSongs) // Use the playlist songs
+            "playlistSongs" -> ArrayList(PlaylistSongsActivity.currentPlaylistSongs) // Use the current order of playlist songs
             else -> musicFiles
         }
 

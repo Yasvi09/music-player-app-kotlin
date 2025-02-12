@@ -18,9 +18,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlaylistDeleted: () -> Unit) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+class PlaylistAdapter(
+    private val mContext: Context,
+    private val playlists: List<Playlist>,
+    private val onPlaylistDeleted: () -> Unit
+) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
     private var onPlaylistClickListener: ((Playlist) -> Unit)? = null
+    private lateinit var preferencesManager: PlaylistPreferencesManager
+
+    init {
+        preferencesManager = PlaylistPreferencesManager(mContext)
+    }
 
     fun setOnPlaylistClickListener(listener: (Playlist) -> Unit) {
         onPlaylistClickListener = listener
@@ -34,7 +43,7 @@ class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlayl
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.playlist_item, parent, false)
+        val view = LayoutInflater.from(mContext).inflate(R.layout.playlist_item, parent, false)
         return PlaylistViewHolder(view)
     }
 
@@ -55,18 +64,18 @@ class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlayl
         }
 
         holder.menuMore.setOnClickListener { view ->
-            showPopupMenu(view, playlist, holder.itemView.context)
+            showPopupMenu(view, playlist)
         }
     }
 
-    private fun showPopupMenu(view: View, playlist: Playlist, context: Context) {
-        val popupMenu = PopupMenu(context, view)
+    private fun showPopupMenu(view: View, playlist: Playlist) {
+        val popupMenu = PopupMenu(mContext, view)
         popupMenu.menuInflater.inflate(R.menu.playlist_popup, popupMenu.menu)
 
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.delete_playlist -> {
-                    showDeleteConfirmationDialog(playlist, context)
+                    showDeleteConfirmationDialog(playlist)
                     true
                 }
                 else -> false
@@ -76,8 +85,8 @@ class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlayl
         popupMenu.show()
     }
 
-    private fun showDeleteConfirmationDialog(playlist: Playlist, context: Context) {
-        val dialog = Dialog(context)
+    private fun showDeleteConfirmationDialog(playlist: Playlist) {
+        val dialog = Dialog(mContext)
         dialog.setContentView(R.layout.custom_dialogue)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
@@ -95,7 +104,7 @@ class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlayl
 
         yesButton.setOnClickListener {
             dialog.dismiss()
-            deletePlaylist(playlist, context)
+            deletePlaylist(playlist)
         }
 
         noButton.setOnClickListener {
@@ -105,20 +114,23 @@ class PlaylistAdapter(private val playlists: List<Playlist>, private val onPlayl
         dialog.show()
     }
 
-    private fun deletePlaylist(playlist: Playlist, context: Context) {
+    private fun deletePlaylist(playlist: Playlist) {
         val playlistRepository = PlaylistRepository()
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val success = playlistRepository.deletePlaylist(playlist.id)
                 if (success) {
-                    Toast.makeText(context, "Playlist deleted successfully", Toast.LENGTH_SHORT).show()
+                    // Remove playlist order from SharedPreferences
+                    preferencesManager.removePlaylistOrder(playlist.id)
+
+                    Toast.makeText(mContext, "Playlist deleted successfully", Toast.LENGTH_SHORT).show()
                     onPlaylistDeleted()
                 } else {
-                    Toast.makeText(context, "Failed to delete playlist", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(mContext, "Failed to delete playlist", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(context, "Error deleting playlist: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(mContext, "Error deleting playlist: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -40,6 +40,7 @@ import java.util.Collections
     private var isPlaylistModified = false
     private var musicService: MusicService? = null
     private var isPlaying = false
+    private lateinit var preferencesManager: PlaylistPreferencesManager
 
     // UI Elements
     private lateinit var backBtn: ImageView
@@ -48,25 +49,158 @@ import java.util.Collections
     private var miniPlayer: NowPlayingFragmentBottom? = null
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_playlist_songs)
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            setContentView(R.layout.activity_playlist_songs)
 
-        playlistId = intent.getStringExtra("playlistId") ?: run {
-            Toast.makeText(this, "Invalid playlist", Toast.LENGTH_SHORT).show()
-            finish()
-            return
+            preferencesManager = PlaylistPreferencesManager(this)
+
+            playlistId = intent.getStringExtra("playlistId") ?: run {
+                Toast.makeText(this, "Invalid playlist", Toast.LENGTH_SHORT).show()
+                finish()
+                return
+            }
+
+            initializeViews()
+            setupClickListeners()
+            loadPlaylistDetails()
+            setupRecyclerView()
+            loadSongs()
         }
 
-        initializeViews()
-        setupClickListeners()
-        loadPlaylistDetails()
-        setupRecyclerView()
-        loadSongs()
+        private fun loadSongs() {
+            lifecycleScope.launch {
+                try {
+                    val playlistSongs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
 
-        miniPlayer = supportFragmentManager.findFragmentById(R.id.frag_bottom_player) as? NowPlayingFragmentBottom
+                    withContext(Dispatchers.Main) {
+                        playlistMusicFiles.clear()
 
-    }
+                        // Get saved order from preferences
+                        val savedOrder = preferencesManager.getSongOrder(playlistId)
+
+                        // If we have a saved order, use it to arrange the songs
+                        if (savedOrder.isNotEmpty()) {
+                            // Create a map of path to MusicFiles for quick lookup
+                            val songMap = mutableMapOf<String, MusicFiles>()
+                            playlistSongs.forEach { playlistSong ->
+                                MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
+                                    songMap[it.path!!] = it
+                                }
+                            }
+
+                            // Add songs in the saved order
+                            savedOrder.forEach { path ->
+                                songMap[path]?.let { playlistMusicFiles.add(it) }
+                            }
+
+                            // Add any new songs that weren't in the saved order
+                            playlistSongs.forEach { playlistSong ->
+                                MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
+                                    if (!savedOrder.contains(it.path)) {
+                                        playlistMusicFiles.add(it)
+                                    }
+                                }
+                            }
+                        } else {
+                            // If no saved order exists, add songs in default order
+                            playlistSongs.forEach { playlistSong ->
+                                MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
+                                    playlistMusicFiles.add(it)
+                                }
+                            }
+
+                            // Save initial order
+                            preferencesManager.saveSongOrder(playlistId, playlistMusicFiles.mapNotNull { it.path })
+                        }
+
+                        if (playlistMusicFiles.isEmpty()) {
+                            onPlaylistEmpty()
+                        } else {
+                            currentPlaylistSongs = ArrayList(playlistMusicFiles)
+                            playlistSongsAdapter = PlaylistSongsAdapter(
+                                this@PlaylistSongsActivity,
+                                playlistMusicFiles,
+                                playlistId,
+                                lifecycleScope
+                            )
+                            recyclerView.adapter = playlistSongsAdapter
+                            setupRecyclerView()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@PlaylistSongsActivity,
+                            "Failed to load songs: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                    }
+                }
+            }
+        }
+
+        private fun setupRecyclerView() {
+            recyclerView.layoutManager = LinearLayoutManager(this)
+
+            val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    source: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    val fromPosition = source.adapterPosition
+                    val toPosition = target.adapterPosition
+
+                    Collections.swap(playlistMusicFiles, fromPosition, toPosition)
+                    Collections.swap(currentPlaylistSongs, fromPosition, toPosition)
+
+                    if (musicService?.mediaPlayer != null &&
+                        NowPlayingFragmentBottom.CURRENT_SONG_SOURCE == "playlist") {
+                        PlayerActivity.listSongs = ArrayList(playlistMusicFiles)
+                    }
+
+                    playlistSongsAdapter.notifyItemMoved(fromPosition, toPosition)
+
+                    // Save the new order to SharedPreferences
+                    preferencesManager.saveSongOrder(playlistId, playlistMusicFiles.mapNotNull { it.path })
+
+                    return true
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    // Not handling swipe
+                }
+
+                override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                    super.onSelectedChanged(viewHolder, actionState)
+                    if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                        viewHolder?.itemView?.alpha = 0.5f
+                    }
+                }
+
+                override fun clearView(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ) {
+                    super.clearView(recyclerView, viewHolder)
+                    viewHolder.itemView.alpha = 1.0f
+
+                    currentPlaylistSongs = ArrayList(playlistMusicFiles)
+                    if (NowPlayingFragmentBottom.CURRENT_SONG_SOURCE == "playlist") {
+                        PlayerActivity.listSongs = ArrayList(playlistMusicFiles)
+                    }
+
+                    // Save the final order after drag and drop
+                    preferencesManager.saveSongOrder(playlistId, playlistMusicFiles.mapNotNull { it.path })
+                }
+            })
+
+            itemTouchHelper.attachToRecyclerView(recyclerView)
+        }
 
     private fun initializeViews() {
         recyclerView = findViewById(R.id.playlistSongrecyclerView)
@@ -146,41 +280,6 @@ import java.util.Collections
         }
     }
 
-    private fun setupRecyclerView() {
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0) {
-            override fun onMove(recyclerView: RecyclerView, source: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                val fromPosition = source.adapterPosition
-                val toPosition = target.adapterPosition
-
-                Collections.swap(playlistMusicFiles, fromPosition, toPosition)
-                Collections.swap(currentPlaylistSongs, fromPosition, toPosition)
-
-                playlistSongsAdapter.notifyItemMoved(fromPosition, toPosition)
-
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-            }
-
-            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-                super.onSelectedChanged(viewHolder, actionState)
-                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    viewHolder?.itemView?.alpha = 0.5f
-                }
-            }
-
-            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
-                super.clearView(recyclerView, viewHolder)
-                viewHolder.itemView.alpha = 1.0f
-            }
-        })
-
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-    }
 
     fun onPlaylistEmpty() {
         isPlaylistModified = true
@@ -222,46 +321,6 @@ import java.util.Collections
             setResult(RESULT_PLAYLIST_MODIFIED)
         }
         super.finish()
-    }
-
-    private fun loadSongs() {
-        lifecycleScope.launch {
-            try {
-                val playlistSongs = playlistSongsRepository.getSongsOfPlaylist(playlistId)
-
-                withContext(Dispatchers.Main) {
-                    playlistMusicFiles.clear()
-                    for (playlistSong in playlistSongs) {
-                        MainActivity.musicFiles.find { it.path == playlistSong.songId }?.let {
-                            playlistMusicFiles.add(it)
-                        }
-                    }
-
-                    if (playlistMusicFiles.isEmpty()) {
-                        onPlaylistEmpty()
-                    } else {
-                        currentPlaylistSongs = ArrayList(playlistMusicFiles)
-                        playlistSongsAdapter = PlaylistSongsAdapter(
-                            this@PlaylistSongsActivity,
-                            playlistMusicFiles,
-                            playlistId,
-                            lifecycleScope
-                        )
-                        recyclerView.adapter = playlistSongsAdapter
-                        setupRecyclerView() // Add this line to enable drag-drop
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@PlaylistSongsActivity,
-                        "Failed to load songs: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    finish()
-                }
-            }
-        }
     }
 
     override fun onServiceConnected(name: ComponentName, service: IBinder) {

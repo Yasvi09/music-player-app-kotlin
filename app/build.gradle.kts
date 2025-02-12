@@ -73,6 +73,7 @@ dependencies {
     implementation ("com.google.android.material:material:1.9.0")
     implementation("com.github.jasync-sql:jasync-mysql:2.2.0")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
     // Circle ImageView
     implementation("de.hdodenhof:circleimageview:3.1.0")
     testImplementation(libs.junit)

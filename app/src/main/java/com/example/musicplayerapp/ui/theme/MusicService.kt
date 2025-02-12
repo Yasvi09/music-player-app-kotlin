@@ -326,6 +326,26 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
         mediaPlayer?.setOnCompletionListener(this)
     }
 
+    interface OnSongChangedListener {
+        fun onSongChanged()
+    }
+
+    private val songChangedListeners = mutableListOf<OnSongChangedListener>()
+
+    fun addSongChangedListener(listener: OnSongChangedListener) {
+        if (!songChangedListeners.contains(listener)) {
+            songChangedListeners.add(listener)
+        }
+    }
+
+    fun removeSongChangedListener(listener: OnSongChangedListener) {
+        songChangedListeners.remove(listener)
+    }
+
+    private fun notifySongChanged() {
+        songChangedListeners.forEach { it.onSongChanged() }
+    }
+
     override fun onCompletion(mp: MediaPlayer?) {
         try {
             if (position < musicFiles.size - 1) {
@@ -334,10 +354,29 @@ class MusicService : Service(), MediaPlayer.OnCompletionListener {
                 position = 0 // Loop back to first song
             }
 
+            // Update the path, artist, and song name in MainActivity's companion object
+            MainActivity.PATH_TO_FRAG = musicFiles[position].path
+            MainActivity.ARTIST_TO_FRAG = musicFiles[position].artist
+            MainActivity.SONG_NAME_TO_FRAG = musicFiles[position].title
+            MainActivity.SHOW_MINI_PLAYER = true
+
+            // Save to SharedPreferences
+            val editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit()
+            editor.putString(MUSIC_FILE, musicFiles[position].path)
+            editor.putString(ARTIST_NAME, musicFiles[position].artist)
+            editor.putString(SONG_NAME, musicFiles[position].title)
+            editor.apply()
+
             mediaPlayer?.reset() // Reset current media player
             createMediaPlayer(position) // Create new media player instance
             mediaPlayer?.start() // Start playing next song
             notifyPlaybackStateChanged(true) // Notify UI to update playback state
+
+            // Notify action playing interface for UI updates
+            actionPlaying?.nextBtnClicked()
+
+            // Notify all listeners about song change
+            notifySongChanged()
         } catch (e: Exception) {
             Log.e("MusicService", "Error in onCompletion", e)
         }
