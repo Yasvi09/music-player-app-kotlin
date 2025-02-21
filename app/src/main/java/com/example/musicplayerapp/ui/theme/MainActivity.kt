@@ -36,6 +36,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if(!NoInternetActivity.isInternetAvailable(this)){
+            val intent=Intent(this,NoInternetActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
         setContentView(R.layout.activity_main)
         permission()
     }

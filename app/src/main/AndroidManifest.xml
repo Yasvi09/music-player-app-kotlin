@@ -26,6 +26,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".ui.theme.NoInternetActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.theme.PlaylistSongsActivity"
             android:exported="false" />
         <activity

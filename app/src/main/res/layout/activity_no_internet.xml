@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:text="TRY AGAIN!!!"
             android:textStyle="bold"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:background="@drawable/button_gradient"
             android:padding="10dp"/>
     </LinearLayout>
